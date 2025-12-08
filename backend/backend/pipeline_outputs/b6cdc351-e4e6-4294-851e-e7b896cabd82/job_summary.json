@@ -1,0 +1,176 @@
+{
+  "job_id": "b6cdc351-e4e6-4294-851e-e7b896cabd82",
+  "state": "success",
+  "step": "completed",
+  "progress": 100,
+  "started_at": "2025-12-05T09:49:02.613727+00:00",
+  "finished_at": "2025-12-05T09:49:04.086272+00:00",
+  "elapsed_sec": 1.4725444316864014,
+  "encoder": "simulator",
+  "resolution": "1080p",
+  "fast_path": true,
+  "proxy": true,
+  "assets": [
+    {
+      "type": "image",
+      "label": "Scene 1",
+      "path": "images/scene_1.png"
+    },
+    {
+      "type": "audio",
+      "label": "Scene 1 Audio",
+      "path": "audio/scene_1.wav"
+    },
+    {
+      "type": "srt",
+      "label": "Subtitles (EN)",
+      "path": "subs/subs_en.srt"
+    },
+    {
+      "type": "srt",
+      "label": "Subtitles (HI)",
+      "path": "subs/subs_hi.srt"
+    }
+  ],
+  "final_video_url": "/artifacts/b6cdc351-e4e6-4294-851e-e7b896cabd82/final_video.mp4",
+  "templates": {
+    "applied": true,
+    "count": 3
+  },
+  "parallax": {
+    "applied": true,
+    "scenes": 1
+  },
+  "audio_director": {
+    "beats_used": 50,
+    "ducking_applied": true
+  },
+  "profile": {
+    "name": "final",
+    "resolution": "1080p",
+    "fps": 30
+  },
+  "qa": {
+    "status": "ok"
+  },
+  "timings": {
+    "total_ms": 1472,
+    "images_ms": 441,
+    "audio_ms": 368,
+    "subtitles_ms": 294,
+    "stitch_ms": 294,
+    "upload_ms": 73
+  },
+  "logs": [
+    {
+      "ts": "2025-12-05T09:49:02.616064+00:00",
+      "level": "info",
+      "message": "[2ms] Generating placeholder images..."
+    },
+    {
+      "ts": "2025-12-05T09:49:02.934606+00:00",
+      "level": "info",
+      "message": "[320ms] Generated 1 placeholder images"
+    },
+    {
+      "ts": "2025-12-05T09:49:02.934606+00:00",
+      "level": "info",
+      "message": "[320ms] Generating placeholder audio..."
+    },
+    {
+      "ts": "2025-12-05T09:49:03.267697+00:00",
+      "level": "info",
+      "message": "[653ms] Generated 1 audio clips"
+    },
+    {
+      "ts": "2025-12-05T09:49:03.267697+00:00",
+      "level": "info",
+      "message": "[653ms] Generating placeholder subtitles..."
+    },
+    {
+      "ts": "2025-12-05T09:49:03.475818+00:00",
+      "level": "info",
+      "message": "[862ms] Generated subtitles (en, hi)"
+    },
+    {
+      "ts": "2025-12-05T09:49:03.475818+00:00",
+      "level": "info",
+      "message": "[862ms] Applying motion templates..."
+    },
+    {
+      "ts": "2025-12-05T09:49:03.475818+00:00",
+      "level": "info",
+      "message": "[862ms] Motion templates applied: 3 filters"
+    },
+    {
+      "ts": "2025-12-05T09:49:03.475818+00:00",
+      "level": "info",
+      "message": "[862ms] Applying 2.5D parallax motion..."
+    },
+    {
+      "ts": "2025-12-05T09:49:03.475818+00:00",
+      "level": "info",
+      "message": "[862ms] Parallax applied to 1 scenes"
+    },
+    {
+      "ts": "2025-12-05T09:49:03.476839+00:00",
+      "level": "info",
+      "message": "[863ms] Detecting audio beats..."
+    },
+    {
+      "ts": "2025-12-05T09:49:03.476839+00:00",
+      "level": "info",
+      "message": "[863ms] Audio sync: 50 beats detected, ducking applied"
+    },
+    {
+      "ts": "2025-12-05T09:49:03.476839+00:00",
+      "level": "info",
+      "message": "[863ms] Creating placeholder video..."
+    },
+    {
+      "ts": "2025-12-05T09:49:03.882175+00:00",
+      "level": "info",
+      "message": "[1268ms] Created final_video.mp4 (normalized location)"
+    },
+    {
+      "ts": "2025-12-05T09:49:03.882175+00:00",
+      "level": "info",
+      "message": "[1268ms] Simulating upload..."
+    },
+    {
+      "ts": "2025-12-05T09:49:04.086272+00:00",
+      "level": "info",
+      "message": "[1472ms] Upload simulation complete"
+    },
+    {
+      "ts": "2025-12-05T09:49:04.086272+00:00",
+      "level": "info",
+      "message": "[1472ms] Job completed in 1.47s"
+    },
+    {
+      "ts": "2025-12-05T09:49:04.086272+00:00",
+      "level": "info",
+      "message": "[1472ms] QA checks: 3/3 passed"
+    }
+  ],
+  "error": null,
+  "plan": {
+    "topic": "CORS Test",
+    "language": "en",
+    "voice": "F",
+    "scenes": [
+      {
+        "image_prompt": "Beautiful temple",
+        "narration": "Testing CORS connectivity",
+        "duration_sec": 3
+      }
+    ],
+    "fast_path": true,
+    "proxy": true,
+    "enable_parallax": true,
+    "enable_templates": true,
+    "enable_audio_sync": true,
+    "quality": "final",
+    "job_id": "b6cdc351-e4e6-4294-851e-e7b896cabd82"
+  }
+}

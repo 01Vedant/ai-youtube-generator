@@ -1,0 +1,232 @@
+{
+  "job_id": "feec7839-c235-43d4-9e60-7784f82bbbea",
+  "state": "success",
+  "step": "completed",
+  "progress": 100,
+  "started_at": "2025-12-05T12:50:45.983764+00:00",
+  "finished_at": "2025-12-05T12:50:48.231210+00:00",
+  "elapsed_sec": 2.247445821762085,
+  "encoder": "simulator",
+  "resolution": "1080p",
+  "fast_path": true,
+  "proxy": true,
+  "assets": [
+    {
+      "type": "image",
+      "label": "Scene 1",
+      "path": "images/scene_1.png"
+    },
+    {
+      "type": "audio",
+      "label": "Scene 1 Audio (Hindi)",
+      "path": "audio/scene_1.wav"
+    },
+    {
+      "type": "srt",
+      "label": "Subtitles (EN)",
+      "path": "subs/subs_en.srt"
+    },
+    {
+      "type": "srt",
+      "label": "Subtitles (HI)",
+      "path": "subs/subs_hi.srt"
+    }
+  ],
+  "final_video_url": "/artifacts/feec7839-c235-43d4-9e60-7784f82bbbea/final_video.mp4",
+  "templates": {
+    "applied": true,
+    "count": 3
+  },
+  "parallax": {
+    "applied": true,
+    "scenes": 1
+  },
+  "audio_director": {
+    "beats_used": 50,
+    "ducking_applied": true
+  },
+  "profile": {
+    "name": "final",
+    "resolution": "1080p",
+    "fps": 30
+  },
+  "qa": {
+    "status": "ok"
+  },
+  "timings": {
+    "total_ms": 2247,
+    "images_ms": 674,
+    "audio_ms": 561,
+    "subtitles_ms": 449,
+    "stitch_ms": 449,
+    "upload_ms": 112
+  },
+  "logs": [
+    {
+      "ts": "2025-12-05T12:50:45.986621+00:00",
+      "level": "info",
+      "message": "[2ms] Generating placeholder images..."
+    },
+    {
+      "ts": "2025-12-05T12:50:46.303104+00:00",
+      "level": "info",
+      "message": "[319ms] Generated 1 placeholder images"
+    },
+    {
+      "ts": "2025-12-05T12:50:46.303104+00:00",
+      "level": "info",
+      "message": "[319ms] Generating audio..."
+    },
+    {
+      "ts": "2025-12-05T12:50:46.303104+00:00",
+      "level": "info",
+      "message": "[319ms] [TTS] language=hi voice_id=hi-IN-SwaraNeural provider=edge"
+    },
+    {
+      "ts": "2025-12-05T12:50:46.303104+00:00",
+      "level": "info",
+      "message": "[319ms] Generating Hindi narration with voice=hi-IN-SwaraNeural..."
+    },
+    {
+      "ts": "2025-12-05T12:50:46.604446+00:00",
+      "level": "info",
+      "message": "[620ms] Using TTS provider: mock"
+    },
+    {
+      "ts": "2025-12-05T12:50:46.604446+00:00",
+      "level": "info",
+      "message": "[620ms] Scene 1: synthesizing 'test narration...' (target: 3.0s)"
+    },
+    {
+      "ts": "2025-12-05T12:50:46.605445+00:00",
+      "level": "info",
+      "message": "[621ms] Scene 1: synthesized 1.26s in 0ms (cached=True)"
+    },
+    {
+      "ts": "2025-12-05T12:50:46.605445+00:00",
+      "level": "info",
+      "message": "[621ms] Scene 1: pacing 1.26s \u2192 3.00s (ratio=0.420)"
+    },
+    {
+      "ts": "2025-12-05T12:50:46.616055+00:00",
+      "level": "info",
+      "message": "[632ms] Hindi narration complete: 3.00s total, 1 scenes paced, provider=mock, synth_ms=0, cache_hits=1/1"
+    },
+    {
+      "ts": "2025-12-05T12:50:47.081224+00:00",
+      "level": "info",
+      "message": "[1097ms] Audio generation complete"
+    },
+    {
+      "ts": "2025-12-05T12:50:47.081224+00:00",
+      "level": "info",
+      "message": "[1097ms] Generating placeholder subtitles..."
+    },
+    {
+      "ts": "2025-12-05T12:50:47.464065+00:00",
+      "level": "info",
+      "message": "[1480ms] Generated subtitles (en, hi)"
+    },
+    {
+      "ts": "2025-12-05T12:50:47.467157+00:00",
+      "level": "info",
+      "message": "[1483ms] Applying motion templates..."
+    },
+    {
+      "ts": "2025-12-05T12:50:47.467157+00:00",
+      "level": "info",
+      "message": "[1483ms] Motion templates applied: 3 filters"
+    },
+    {
+      "ts": "2025-12-05T12:50:47.562952+00:00",
+      "level": "info",
+      "message": "[1579ms] Applying 2.5D parallax motion..."
+    },
+    {
+      "ts": "2025-12-05T12:50:47.563952+00:00",
+      "level": "info",
+      "message": "[1580ms] Parallax applied to 1 scenes"
+    },
+    {
+      "ts": "2025-12-05T12:50:47.565162+00:00",
+      "level": "info",
+      "message": "[1581ms] Detecting audio beats..."
+    },
+    {
+      "ts": "2025-12-05T12:50:47.565162+00:00",
+      "level": "info",
+      "message": "[1581ms] Audio sync: 50 beats detected, ducking applied"
+    },
+    {
+      "ts": "2025-12-05T12:50:47.565162+00:00",
+      "level": "info",
+      "message": "[1581ms] Creating placeholder video..."
+    },
+    {
+      "ts": "2025-12-05T12:50:48.028432+00:00",
+      "level": "info",
+      "message": "[2044ms] Created final_video.mp4 (normalized location)"
+    },
+    {
+      "ts": "2025-12-05T12:50:48.028432+00:00",
+      "level": "info",
+      "message": "[2044ms] Simulating upload..."
+    },
+    {
+      "ts": "2025-12-05T12:50:48.231210+00:00",
+      "level": "info",
+      "message": "[2247ms] Upload simulation complete"
+    },
+    {
+      "ts": "2025-12-05T12:50:48.231210+00:00",
+      "level": "info",
+      "message": "[2247ms] Job completed in 2.25s"
+    },
+    {
+      "ts": "2025-12-05T12:50:48.232219+00:00",
+      "level": "info",
+      "message": "[2248ms] QA checks: 3/3 passed"
+    }
+  ],
+  "error": null,
+  "plan": {
+    "topic": "duration type test - string",
+    "language": "hi",
+    "voice": "F",
+    "voice_id": "hi-IN-SwaraNeural",
+    "scenes": [
+      {
+        "image_prompt": "test scene",
+        "narration": "test narration",
+        "duration_sec": 3.0
+      }
+    ],
+    "fast_path": true,
+    "proxy": true,
+    "enable_parallax": true,
+    "enable_templates": true,
+    "enable_audio_sync": true,
+    "quality": "final",
+    "job_id": "feec7839-c235-43d4-9e60-7784f82bbbea"
+  },
+  "audio": {
+    "lang": "hi",
+    "voice_id": "hi-IN-SwaraNeural",
+    "provider": "mock",
+    "paced": true,
+    "total_duration_sec": 3.0,
+    "duration_ms": 3000,
+    "synth_ms": 0,
+    "cache_hits": 1,
+    "cache_hit_rate": 1.0,
+    "scenes": [
+      {
+        "scene_index": 1,
+        "path": "audio/scene_1.wav",
+        "duration_sec": 3.0,
+        "paced": true,
+        "stretch_ratio": 0.42
+      }
+    ]
+  }
+}

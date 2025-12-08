@@ -1,0 +1,233 @@
+.account-page {
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: #f5f7fa;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.account-page h1 {
+  font-size: 32px;
+  margin-bottom: 40px;
+  color: #1a1a1a;
+}
+
+.account-section {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  margin-bottom: 24px;
+}
+
+.account-section h2 {
+  margin-top: 0;
+  font-size: 20px;
+  margin-bottom: 16px;
+  color: #1a1a1a;
+}
+
+.account-section > p {
+  color: #666;
+  margin: 0 0 24px 0;
+}
+
+.action-card {
+  background: #f5f7fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.action-card.danger {
+  background: #fff5f5;
+  border-left: 4px solid #dc2626;
+}
+
+.action-info {
+  flex: 1;
+}
+
+.action-info h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: #1a1a1a;
+}
+
+.action-info p {
+  margin: 0 0 4px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.action-info small {
+  color: #999;
+  font-size: 12px;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-secondary {
+  background: #e0e0e0;
+  color: #1a1a1a;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #d0d0d0;
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.api-key-display {
+  margin-top: 20px;
+  padding: 16px;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.api-key-display label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #1a1a1a;
+  font-size: 14px;
+}
+
+.api-key-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+}
+
+.api-key-box code {
+  flex: 1;
+  word-break: break-all;
+  color: #1a1a1a;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.btn-icon:hover {
+  background: #f0f0f0;
+}
+
+.api-key-display small {
+  display: block;
+  color: #999;
+  font-size: 12px;
+}
+
+.backup-info {
+  background: #f5f7fa;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.backup-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.backup-row:last-child {
+  border-bottom: none;
+}
+
+.backup-row span {
+  color: #666;
+  font-size: 14px;
+}
+
+.backup-row strong {
+  color: #1a1a1a;
+  font-size: 14px;
+}
+
+.backup-note {
+  background: #f0fdf4;
+  border-left: 4px solid #00c853;
+  padding: 12px;
+  border-radius: 6px;
+  color: #2d6a4f;
+  font-size: 14px;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .account-page {
+    padding: 20px 12px;
+  }
+
+  .account-section {
+    padding: 20px;
+  }
+
+  .action-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .confirm-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .confirm-actions .btn {
+    width: 100%;
+  }
+}

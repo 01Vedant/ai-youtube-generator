@@ -1,0 +1,16 @@
+{
+  "id": "9a4c3f5e-8a3c-4f2c-9d7a-3b2f9c7a1e11",
+  "title": "Hindu Quotes",
+  "description": "Shorts with timeless Hindu quotes and meanings.",
+  "category": "quotes",
+  "thumb": "/static/thumbs/hindu_quotes.png",
+  "visibility": "builtin",
+  "user_id": "system",
+  "plan_json": {
+    "title": "Hindu Quote",
+    "scenes": [
+      { "text": "Quote: \"Ahimsa Paramo Dharma\"", "duration": 2 },
+      { "text": "Meaning: Non-violence is the highest duty.", "duration": 2 }
+    ]
+  }
+}

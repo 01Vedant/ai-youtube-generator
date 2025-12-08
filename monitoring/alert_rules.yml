@@ -1,0 +1,11 @@
+groups:
+  - name: bhakti-generator
+    rules:
+      - alert: HighJobFailures
+        expr: sum(rate(job_failures_total[5m])) > 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: High job failures
+          description: More than 1 job failure per 5m.

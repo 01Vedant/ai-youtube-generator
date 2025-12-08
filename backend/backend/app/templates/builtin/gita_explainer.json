@@ -1,0 +1,16 @@
+{
+  "id": "3f2e1d0c-9b8a-4a7f-8c6d-5e4f3a2b1c01",
+  "title": "Bhagavad Gita Explainer",
+  "description": "Explain verses of the Gita in simple terms.",
+  "category": "devotional",
+  "thumb": "/static/thumbs/gita_explainer.png",
+  "visibility": "builtin",
+  "user_id": "system",
+  "plan_json": {
+    "title": "Gita Verse",
+    "scenes": [
+      { "text": "Verse: BG 2.47 - Karmanye vadhikaraste", "duration": 2 },
+      { "text": "Explainer: Focus on actions, not fruits.", "duration": 2 }
+    ]
+  }
+}

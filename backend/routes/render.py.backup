@@ -1,0 +1,445 @@
+"""
+Render router: POST /render to enqueue, GET /render/{job_id}/status to poll, DELETE /cancel.
+Bridges FastAPI to orchestrator + queue with observability & safety guardrails.
+SaaS-integrated: tenant isolation, quota enforcement, usage metering.
+"""
+import os
+import logging
+import time
+import json
+from pathlib import Path
+from typing import Optional, Dict, Any
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Request
+from pydantic import ValidationError
+
+from jobs.queue import get_queue, JobStatus, JobStep
+from jobs.types import RenderPlan
+from services.logging_service import get_metrics, export_prometheus_metrics
+
+# Graceful imports for optional dependencies
+try:
+    from backend.app.celery_queue import CeleryQueueBackend
+except ImportError:
+    CeleryQueueBackend = None
+
+try:
+    from backend.app.guardrails import validate_render_plan, estimate_cost, check_cost_guard
+except ImportError:
+    def validate_render_plan(plan, settings=None): return (True, None)
+    def estimate_cost(plan, settings=None): return 0.0
+    def check_cost_guard(cost, max_cost=None): return (True, None)
+
+try:
+    from backend.app.audit import (
+        log_job_enqueued, log_job_canceled, log_job_completed, log_quota_violation
+    )
+except ImportError:
+    def log_job_enqueued(*args, **kwargs): pass
+    def log_job_canceled(*args, **kwargs): pass
+    def log_job_completed(*args, **kwargs): pass
+    def log_quota_violation(*args, **kwargs): pass
+
+try:
+    from backend.app.metrics import (
+        jobs_started, jobs_succeeded, jobs_failed, jobs_canceled,
+        job_duration_sec, total_cost_estimated, quota_violations
+    )
+except ImportError:
+    class DummyMetric:
+        def inc(self): pass
+        def observe(self, val): pass
+        def labels(self, **kwargs): return self
+    jobs_started = jobs_succeeded = jobs_failed = jobs_canceled = DummyMetric()
+    job_duration_sec = total_cost_estimated = quota_violations = DummyMetric()
+
+try:
+    from backend.app.config import settings
+except ImportError:
+    class Settings:
+        MAX_JOB_COST = 100.0
+        RATE_LIMIT_PER_MIN = 10
+    settings = Settings()
+
+# Import SaaS modules (optional)
+try:
+    from app.metering import QuotaManager, UsageCounter
+    METERING_ENABLED = True
+except ImportError:
+    METERING_ENABLED = False
+
+logger = logging.getLogger(__name__)
+router = APIRouter(prefix="/render", tags=["render"])
+
+
+@router.get("/test")
+def test_endpoint():
+    """Simple test endpoint to verify router is working"""
+    return {"status": "ok", "message": "Render router is working!"}
+
+
+@router.post("/test-post")
+def test_post_endpoint(data: dict):
+    """Test POST endpoint with plain dict"""
+    return {"status": "ok", "received": data}
+
+
+# Inline executor for background tasks when Celery unavailable
+import threading
+
+def run_in_thread(func, *args, **kwargs):
+    """Execute function in background thread for dev mode"""
+    thread = threading.Thread(target=func, args=args, kwargs=kwargs, daemon=True)
+    thread.start()
+
+# DEV MODE: Use simulator when SIMULATE_RENDER=1
+SIMULATE_RENDER = int(os.getenv("SIMULATE_RENDER", "1"))
+
+if SIMULATE_RENDER:
+    from orchestrator import Orchestrator
+    logger.info("Using SIMULATOR orchestrator (SIMULATE_RENDER=1)")
+else:
+    try:
+        from pipeline.orchestrator import Orchestrator
+        logger.info("Using REAL orchestrator (SIMULATE_RENDER=0)")
+    except ImportError:
+        logger.warning("Real orchestrator not available, falling back to simulator")
+        from orchestrator import Orchestrator
+        SIMULATE_RENDER = 1
+
+# In-memory status cache for simulator
+_status_cache: Dict[str, Dict[str, Any]] = {}
+
+# Global orchestrator instance
+_orchestrator = None
+
+
+def get_orchestrator() -> Orchestrator:
+    global _orchestrator
+    if _orchestrator is None:
+        _orchestrator = Orchestrator(base_dir=Path("platform/pipeline_outputs"))
+    return _orchestrator
+
+
+def _run_job_background(job_id: str, plan_dict: dict, request_id: Optional[str] = None, tenant_id: Optional[str] = None, user_id: Optional[str] = None):
+    """Background worker to run orchestrator for a job with observability and usage metering."""
+    queue = get_queue()
+    queue.mark_running(job_id)
+    queue.log_message(job_id, f"Starting job {job_id}")
+    
+    # Initialize usage counter if metering enabled
+    usage_counter = None
+    if METERING_ENABLED and tenant_id:
+        usage_counter = UsageCounter(tenant_id)
+    
+    start_time = time.time()
+    step_start_times = {}
+
+    def status_callback(step: str, progress: int, meta: Optional[Dict] = None):
+        """Called by orchestrator to emit step updates."""
+        # Update in-memory status cache for simulator
+        _status_cache[job_id] = {
+            "job_id": job_id,
+            "state": "running" if progress < 100 else "success",
+            "step": step,
+            "progress": progress,
+            "meta": meta or {}
+        }
+        
+        # Record step duration if we have a previous step
+        if step_start_times.get(step) is None:
+            step_start_times[step] = time.time()
+        else:
+            elapsed = time.time() - step_start_times[step]
+            try:
+                job_duration_sec.observe(elapsed)
+            except:
+                pass
+        
+        try:
+            queue.update_step(job_id, step, progress, meta)
+        except:
+            pass
+
+    try:
+        jobs_started.inc()
+        
+        # Run orchestrator with callback
+        orch = get_orchestrator()
+        summary = orch.run(plan_dict, status_callback=status_callback)
+        
+        # Update status cache with final summary
+        _status_cache[job_id] = summary
+
+        duration = time.time() - start_time
+        job_duration_sec.observe(duration)
+        
+        # Final usage increment
+        if usage_counter:
+            usage_counter.increment("render_minutes", duration / 60)
+        
+        final_video_url = summary.get("final_video_url")
+        queue.mark_success(job_id, final_video_url=final_video_url)
+        queue.log_message(job_id, f"Job completed successfully in {duration:.1f}s")
+        
+        jobs_succeeded.inc()
+        log_job_completed(job_id, state="success", duration_sec=duration, tenant_id=tenant_id)
+
+    except Exception as e:
+        logger.exception("Job %s failed: %s", job_id, e)
+        error_msg = str(e)
+        _status_cache[job_id] = {
+            "job_id": job_id,
+            "state": "error",
+            "step": "error",
+            "progress": 0,
+            "error": error_msg
+        }
+        queue.mark_error(job_id, error_msg)
+        queue.log_message(job_id, f"Error: {error_msg}")
+        
+        jobs_failed.inc()
+        log_job_completed(job_id, state="error", error=error_msg, tenant_id=tenant_id)
+
+
+@router.post("")
+def post_render(plan: RenderPlan, background_tasks: BackgroundTasks, request: Request):
+    """
+    POST /render: Accept a RenderPlan, validate, enforce guardrails, enqueue, return job_id.
+    
+    Rate limited by IP address. Validates quotas, costs, and input safety.
+    Accepts optional Idempotency-Key header for retry safety.
+    
+    SaaS: Enforces per-tenant quotas before enqueue; attaches tenant_id to job.
+    Returns 402 Payment Required if quota exceeded; 429 Too Many Requests if over limits.
+    """
+    try:
+        queue = get_queue()
+        request_id = request.scope.get("request_id")
+    except Exception as e:
+        logger.exception("Failed to initialize queue")
+        raise HTTPException(status_code=500, detail=f"Queue initialization failed: {str(e)}")
+    tenant_id = getattr(request.state, 'tenant_id', None)
+    user_id = getattr(request.state, 'user_id', None)
+    
+    try:
+        plan_dict = plan.model_dump()
+    except ValidationError as e:
+        logger.warning("Plan validation failed: %s", e)
+        raise HTTPException(status_code=400, detail=str(e)) from e
+    
+    # Validate against JSON Schema first (more detailed errors)
+    import json
+    import jsonschema
+    schema_path = Path(__file__).parent.parent / "backend" / "app" / "schemas" / "plan_schema.json"
+    if schema_path.exists():
+        try:
+            schema = json.loads(schema_path.read_text())
+            jsonschema.validate(plan_dict, schema)
+        except jsonschema.ValidationError as e:
+            logger.warning("JSON Schema validation failed: %s", e.message)
+            field_path = ".".join(str(p) for p in e.path) if e.path else "root"
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "error": "Validation failed",
+                    "field": field_path,
+                    "message": e.message,
+                    "validator": e.validator
+                }
+            )
+    
+    # Force PROXY mode resolution limits
+    if plan_dict.get("render_mode") == "PROXY":
+        target_res = plan_dict.get("target_res", "1080p")
+        if target_res not in ["720p", "1080p"]:
+            plan_dict["target_res"] = "1080p"
+            logger.info(f"Forced PROXY mode to max 1080p (was {target_res})")
+
+    # Validate guardrails
+    is_valid, error_msg = validate_render_plan(plan_dict, settings)
+    if not is_valid:
+        logger.warning("Guardrail check failed: %s", error_msg)
+        quota_violations.labels(quota_type="validation").inc()
+        log_quota_violation("validation", request_id=request_id, tenant_id=tenant_id, details={"error": error_msg})
+        raise HTTPException(status_code=400, detail=error_msg)
+
+    # Check quota if metering enabled
+    if METERING_ENABLED and tenant_id:
+        try:
+            quota_mgr = QuotaManager(tenant_id, plan_type="pro")
+            
+            # Check render minutes quota
+            quota_mgr.enforce_quota("render_minutes", 30)  # Assume 30 min render
+            
+            # Log audit
+            from ..backend.app.audit import log_event
+            log_event("quota_check", request_id=request_id, tenant_id=tenant_id, status="passed")
+        except HTTPException as e:
+            if e.status_code == 402:
+                logger.warning("Quota exceeded for tenant %s: %s", tenant_id, e.detail)
+                log_quota_violation("render_quota_exceeded", request_id=request_id, tenant_id=tenant_id)
+                raise HTTPException(status_code=402, detail={
+                    "error": "Quota exceeded",
+                    "message": "You've reached your monthly render quota. Upgrade to continue.",
+                    "detail": e.detail
+                })
+            raise
+
+    # Estimate cost
+    cost_estimate = estimate_cost(plan_dict, settings)
+    is_allowed, cost_msg = check_cost_guard(cost_estimate, settings.MAX_JOB_COST)
+    if not is_allowed:
+        logger.warning("Cost guard triggered: %s", cost_msg)
+        quota_violations.labels(quota_type="cost").inc()
+        log_quota_violation("cost_exceeded", request_id=request_id, tenant_id=tenant_id, details={
+            "estimated_cost": cost_estimate,
+            "max_cost": settings.MAX_JOB_COST,
+        })
+        raise HTTPException(status_code=429, detail={
+            "error": "Rate limited",
+            "message": "Job cost too high. Please try with fewer scenes.",
+            "detail": cost_msg
+        })
+
+    # Enqueue
+    job_id = queue.enqueue(plan_dict)
+    total_cost_estimated.inc(cost_estimate)
+
+    # Attach tenant info to job summary
+    if tenant_id and user_id:
+        job_summary = queue.get_status(job_id)
+        if job_summary:
+            job_summary.tenant_id = tenant_id
+            job_summary.user_id = user_id
+
+    # Log audit
+    log_job_enqueued(
+        job_id,
+        request_id=request_id,
+        tenant_id=tenant_id,
+        user_id=user_id,
+        topic=plan_dict.get("topic"),
+        num_scenes=len(plan_dict.get("scenes", [])),
+        cost_estimate=cost_estimate,
+    )
+
+    # Spawn background task (use thread for dev, BackgroundTasks for production)
+    if SIMULATE_RENDER:
+        run_in_thread(_run_job_background, job_id, plan_dict, request_id, tenant_id, user_id)
+    else:
+        background_tasks.add_task(_run_job_background, job_id, plan_dict, request_id, tenant_id, user_id)
+
+    return {
+        "job_id": job_id,
+        "status": "queued",
+        "estimated_wait_seconds": 0 if SIMULATE_RENDER else 120,
+        "fast_path": True,
+        "proxy": True,
+    }
+
+
+@router.get("/{job_id}/status")
+def get_render_status(job_id: str, request: Request):
+    """GET /render/{job_id}/status: Poll job status in real-time."""
+    
+    # Check if simulator has this job in cache or on disk
+    if SIMULATE_RENDER or job_id in _status_cache:
+        # Try reading from disk first (job_summary.json)
+        summary_path = Path("platform/pipeline_outputs") / job_id / "job_summary.json"
+        if summary_path.exists():
+            try:
+                summary = json.loads(summary_path.read_text(encoding="utf-8"))
+                return summary
+            except Exception as e:
+                logger.warning(f"Failed to read job_summary.json for {job_id}: {e}")
+        
+        # Fall back to in-memory cache
+        if job_id in _status_cache:
+            return _status_cache[job_id]
+        
+        # If not found yet, job might be just enqueued
+        return {
+            "job_id": job_id,
+            "state": "pending",
+            "step": "pending",
+            "progress": 0,
+            "assets": [],
+            "logs": []
+        }
+    
+    # Use real queue for non-simulator mode
+    queue = get_queue()
+    request_id = request.scope.get("request_id")
+    
+    status = queue.get_status(job_id)
+
+    if not status:
+        logger.warning("Job not found: %s", job_id)
+        raise HTTPException(status_code=404, detail=f"Job {job_id} not found")
+
+    return {
+        "job_id": status.job_id,
+        "state": status.state.value,
+        "step": status.step.value,
+        "progress_pct": status.progress_pct,
+        "assets": status.assets,
+        "final_video_url": status.final_video_url,
+        "youtube_url": status.youtube_url,
+        "logs": status.logs,
+        "error": status.error,
+        "cost_estimate_usd": status.cost_estimate,
+    }
+
+
+@router.delete("/{job_id}/cancel")
+def cancel_render(job_id: str, request: Request):
+    """
+    DELETE /render/{job_id}/cancel: Request job cancellation.
+    Returns 200 if cancellation was initiated or job already terminal.
+    Returns 404 if job not found.
+    Returns 409 if job cannot be canceled (already completed).
+    """
+    queue = get_queue()
+    request_id = request.scope.get("request_id")
+    
+    status = queue.get_status(job_id)
+    if not status:
+        logger.warning("Cancel requested for non-existent job: %s", job_id)
+        raise HTTPException(status_code=404, detail=f"Job {job_id} not found")
+
+    # Check if already terminal
+    if status.state.value in ["success", "error", "canceled"]:
+        logger.info("Cancel requested for terminal job (already %s): %s", status.state.value, job_id)
+        return {
+            "job_id": job_id,
+            "message": f"Job already in {status.state.value} state",
+            "state": status.state.value,
+        }
+
+    # Attempt cancellation
+    success = queue.cancel(job_id)
+    if success:
+        logger.info("Job canceled: %s", job_id)
+        jobs_canceled.inc()
+        log_job_canceled(job_id, request_id=request_id, reason="user_requested")
+        return {
+            "job_id": job_id,
+            "message": "Cancellation requested",
+            "state": "canceled",
+        }
+    else:
+        logger.error("Cancellation failed for job: %s", job_id)
+        raise HTTPException(status_code=500, detail="Failed to cancel job")
+
+
+@router.get("/metrics")
+def get_platform_metrics():
+    """GET /metrics: Return platform metrics (JSON)."""
+    return get_metrics().to_dict()
+
+
+@router.get("/metrics/prometheus")
+def get_prometheus_metrics():
+    """GET /metrics/prometheus: Export metrics in Prometheus text format."""
+    from fastapi.responses import PlainTextResponse
+    return PlainTextResponse(export_prometheus_metrics())

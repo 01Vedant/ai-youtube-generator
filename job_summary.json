@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "test": "smoke_test",
+  "plan": {
+    "topic": "Test Video",
+    "language": "en",
+    "voice": "F",
+    "length": 5,
+    "style": "minimal",
+    "scenes": [
+      {
+        "scene_type": "intro",
+        "text": "Welcome!"
+      },
+      {
+        "scene_type": "outro",
+        "text": "Thanks!"
+      }
+    ]
+  }
+}

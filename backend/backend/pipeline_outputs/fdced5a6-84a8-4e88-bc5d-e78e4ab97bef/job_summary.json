@@ -1,0 +1,191 @@
+{
+  "job_id": "fdced5a6-84a8-4e88-bc5d-e78e4ab97bef",
+  "state": "success",
+  "step": "completed",
+  "progress": 100,
+  "started_at": "2025-12-05T10:59:42.306512+00:00",
+  "finished_at": "2025-12-05T10:59:44.299765+00:00",
+  "elapsed_sec": 1.9932537078857422,
+  "encoder": "simulator",
+  "resolution": "720p",
+  "fast_path": true,
+  "proxy": true,
+  "assets": [
+    {
+      "type": "image",
+      "label": "Scene 1",
+      "path": "images/scene_1.png"
+    },
+    {
+      "type": "image",
+      "label": "Scene 2",
+      "path": "images/scene_2.png"
+    },
+    {
+      "type": "audio",
+      "label": "Scene 1 Audio",
+      "path": "audio/scene_1.wav"
+    },
+    {
+      "type": "audio",
+      "label": "Scene 2 Audio",
+      "path": "audio/scene_2.wav"
+    },
+    {
+      "type": "srt",
+      "label": "Subtitles (EN)",
+      "path": "subs/subs_en.srt"
+    },
+    {
+      "type": "srt",
+      "label": "Subtitles (HI)",
+      "path": "subs/subs_hi.srt"
+    }
+  ],
+  "final_video_url": "/artifacts/fdced5a6-84a8-4e88-bc5d-e78e4ab97bef/final_video.mp4",
+  "templates": {
+    "applied": true,
+    "count": 4
+  },
+  "parallax": {
+    "applied": true,
+    "scenes": 2
+  },
+  "audio_director": {
+    "beats_used": 50,
+    "ducking_applied": true
+  },
+  "profile": {
+    "name": "preview",
+    "resolution": "720p",
+    "fps": 24
+  },
+  "qa": {
+    "status": "ok"
+  },
+  "timings": {
+    "total_ms": 1993,
+    "images_ms": 597,
+    "audio_ms": 498,
+    "subtitles_ms": 398,
+    "stitch_ms": 398,
+    "upload_ms": 99
+  },
+  "logs": [
+    {
+      "ts": "2025-12-05T10:59:42.309799+00:00",
+      "level": "info",
+      "message": "[3ms] Generating placeholder images..."
+    },
+    {
+      "ts": "2025-12-05T10:59:42.678691+00:00",
+      "level": "info",
+      "message": "[372ms] Generated 2 placeholder images"
+    },
+    {
+      "ts": "2025-12-05T10:59:42.678691+00:00",
+      "level": "info",
+      "message": "[372ms] Generating placeholder audio..."
+    },
+    {
+      "ts": "2025-12-05T10:59:43.180094+00:00",
+      "level": "info",
+      "message": "[873ms] Generated 2 audio clips"
+    },
+    {
+      "ts": "2025-12-05T10:59:43.180673+00:00",
+      "level": "info",
+      "message": "[874ms] Generating placeholder subtitles..."
+    },
+    {
+      "ts": "2025-12-05T10:59:43.489201+00:00",
+      "level": "info",
+      "message": "[1182ms] Generated subtitles (en, hi)"
+    },
+    {
+      "ts": "2025-12-05T10:59:43.489201+00:00",
+      "level": "info",
+      "message": "[1182ms] Applying motion templates..."
+    },
+    {
+      "ts": "2025-12-05T10:59:43.489201+00:00",
+      "level": "info",
+      "message": "[1182ms] Motion templates applied: 4 filters"
+    },
+    {
+      "ts": "2025-12-05T10:59:43.489711+00:00",
+      "level": "info",
+      "message": "[1183ms] Applying 2.5D parallax motion..."
+    },
+    {
+      "ts": "2025-12-05T10:59:43.489711+00:00",
+      "level": "info",
+      "message": "[1183ms] Parallax applied to 2 scenes"
+    },
+    {
+      "ts": "2025-12-05T10:59:43.489711+00:00",
+      "level": "info",
+      "message": "[1183ms] Detecting audio beats..."
+    },
+    {
+      "ts": "2025-12-05T10:59:43.489711+00:00",
+      "level": "info",
+      "message": "[1183ms] Audio sync: 50 beats detected, ducking applied"
+    },
+    {
+      "ts": "2025-12-05T10:59:43.490222+00:00",
+      "level": "info",
+      "message": "[1183ms] Creating placeholder video..."
+    },
+    {
+      "ts": "2025-12-05T10:59:44.045952+00:00",
+      "level": "info",
+      "message": "[1739ms] Created final_video.mp4 (normalized location)"
+    },
+    {
+      "ts": "2025-12-05T10:59:44.045952+00:00",
+      "level": "info",
+      "message": "[1739ms] Simulating upload..."
+    },
+    {
+      "ts": "2025-12-05T10:59:44.299765+00:00",
+      "level": "info",
+      "message": "[1993ms] Upload simulation complete"
+    },
+    {
+      "ts": "2025-12-05T10:59:44.299765+00:00",
+      "level": "info",
+      "message": "[1993ms] Job completed in 1.99s"
+    },
+    {
+      "ts": "2025-12-05T10:59:44.299765+00:00",
+      "level": "info",
+      "message": "[1993ms] QA checks: 3/3 passed"
+    }
+  ],
+  "error": null,
+  "plan": {
+    "topic": "Hindi TTS E2E",
+    "language": "hi",
+    "voice": "F",
+    "scenes": [
+      {
+        "image_prompt": "temple at sunrise with golden light",
+        "narration": "\u00e0\u00a4\u00ad\u00e0\u00a5\u2039\u00e0\u00a4\u00b0 \u00e0\u00a4\u00ae\u00e0\u00a5\u2021\u00e0\u00a4\u201a \u00e0\u00a4\u00ae\u00e0\u00a4\u201a\u00e0\u00a4\u00a6\u00e0\u00a4\u00bf\u00e0\u00a4\u00b0 \u00e0\u00a4\u2022\u00e0\u00a5\u20ac \u00e0\u00a4\u02dc\u00e0\u00a4\u201a\u00e0\u00a4\u0178\u00e0\u00a4\u00bf\u00e0\u00a4\u00af\u00e0\u00a4\u00be\u00e0\u00a4\u201a \u00e0\u00a4\u00ac\u00e0\u00a4\u0153\u00e0\u00a4\u00a4\u00e0\u00a5\u20ac \u00e0\u00a4\u00b9\u00e0\u00a5\u02c6\u00e0\u00a4\u201a\u00e0\u00a5\u00a4",
+        "duration_sec": 4
+      },
+      {
+        "image_prompt": "mountain peak in meditation",
+        "narration": "\u00e0\u00a4\u2020\u00e0\u00a4\u201a\u00e0\u00a4\u00a4\u00e0\u00a4\u00b0\u00e0\u00a4\u00bf\u00e0\u00a4\u2022 \u00e0\u00a4\u00b6\u00e0\u00a4\u00be\u00e0\u00a4\u201a\u00e0\u00a4\u00a4\u00e0\u00a4\u00bf \u00e0\u00a4\u2022\u00e0\u00a5\u20ac \u00e0\u00a4\u2013\u00e0\u00a5\u2039\u00e0\u00a4\u0153 \u00e0\u00a4\u00ae\u00e0\u00a5\u2021\u00e0\u00a4\u201a\u00e0\u00a5\u00a4",
+        "duration_sec": 4
+      }
+    ],
+    "fast_path": true,
+    "proxy": true,
+    "enable_parallax": true,
+    "enable_templates": true,
+    "enable_audio_sync": true,
+    "quality": "preview",
+    "job_id": "fdced5a6-84a8-4e88-bc5d-e78e4ab97bef"
+  }
+}

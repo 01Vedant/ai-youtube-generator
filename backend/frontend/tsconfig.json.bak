@@ -1,0 +1,64 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "useDefineForClassFields": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "esnext",
+    "skipLibCheck": true,
+    "allowJs": true,
+    "types": ["vite/client"],
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Strict Type-Checking Options */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Experimental options */
+    "experimentalDecorators": true,
+
+    /* Path aliases for cleaner imports */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": [
+    "src/main.tsx",
+    "src/App.tsx",
+    "src/components/**/*",
+    "src/pages/LibraryPage.tsx",
+    "src/components/PublicShell.tsx",
+    "src/lib/**/*",
+    "src/seo.ts",
+    "vite-env.d.ts"
+  ],
+  "exclude": [
+    "src/pages/Admin*",
+    "src/pages/QueueAdminPage.tsx",
+    "src/pages/DashboardPage.tsx",
+    "src/pages/LandingPage.tsx",
+    "src/pages/NotFoundPage.tsx",
+    "src/pages/ProjectsPage.tsx",
+    "src/pages/ProjectDetailPage.tsx",
+    "src/pages/TemplatesPage.tsx",
+    "src/pages/MarketplacePage.tsx",
+    "node_modules"
+  ]
+}

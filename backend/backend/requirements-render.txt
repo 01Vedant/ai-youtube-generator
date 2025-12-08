@@ -1,0 +1,48 @@
+# Bhakti Video Generator — Backend Requirements
+# Production-ready rendering and API infrastructure
+
+# Core Framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.4.2
+pydantic-settings==2.0.3
+
+# Async & Concurrency
+python-multipart==0.0.6
+
+# Pipeline & Processing
+moviepy==1.0.3
+Pillow==10.0.1
+pydub==0.25.1
+imageio==2.33.0
+imageio-ffmpeg==1.0.1
+
+# TTS
+pyttsx3==2.90
+# elevenlabs==0.2.26  # Optional: uncomment for ElevenLabs
+
+# Image Generation (Optional)
+# openai==1.3.1  # Optional: uncomment for DALL·E
+
+# YouTube Integration (Optional)
+# google-auth-oauthlib==1.1.0
+# google-auth-httplib2==0.2.0
+# google-api-python-client==2.100.0
+
+# Storage (Optional S3)
+# boto3==1.28.85  # Optional: uncomment for S3 upload
+
+# Async Job Queue (Optional, for production scaling)
+# celery==5.3.2
+# redis==5.0.0
+
+# Monitoring & Logging
+python-json-logger==2.0.7
+
+# Testing
+requests==2.31.0
+pytest==7.4.3
+
+# Development
+black==23.11.0
+pylint==3.0.3

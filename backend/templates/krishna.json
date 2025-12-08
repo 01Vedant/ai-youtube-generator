@@ -1,0 +1,58 @@
+{
+  "name": "Krishna Leela - Divine Play",
+  "description": "The playful and divine stories of Lord Krishna - from his birth to his iconic moments as Radha's beloved and Arjun's guide.",
+  "category": "devotional",
+  "duration_minutes": 14,
+  "language": "hindi",
+  "author": "DevotionalAI",
+  "scenes": [
+    {
+      "scene_number": 1,
+      "scene_title": "Krishna's Birth - The Divine Arrival",
+      "image_prompt": "Depict the sacred midnight of Krishna's birth in Mathura prison: Devaki holding newborn Krishna, divine light emanating from the baby, chains falling away, guards asleep. Prison cell becomes ethereal with celestial light. Janaka and Rohini witness the miracle. Style: spiritual, luminous, Raja Ravi Varma influence, 4K, ultra-detailed.",
+      "voiceover": "Mathura ki raatri thi. Devaki ne ek nhaale balak ko janm diya jo puri brahmaand ka niyanta tha. Krishna, Bhagwan Hari hi, Vasudeva aur Devaki ke ghar aaye."
+    },
+    {
+      "scene_number": 2,
+      "scene_title": "Krishna's Childhood Leelas in Gokul",
+      "image_prompt": "Show Krishna as a mischievous toddler in pastoral Gokul: stealing butter, playing the flute, surrounded by adoring gopis, cows in lush meadows. Radha visible among the gopis, both shy and enchanted. Lighting: warm golden pastoral, soft afternoon light. Animation potential: Krishna chasing butterflies, stealing butter, playing with cows.",
+      "voiceover": "Gokul mein Krishna ki leelas anivar the. Makhan churana, bansuri bajna, aur gopis ko apne maya se mohan karna - ye sab unke baal-leelas the."
+    },
+    {
+      "scene_number": 3,
+      "scene_title": "The Rasa Leela - Divine Dance",
+      "image_prompt": "Ethereal depiction of Rasa Leela: Krishna at the center playing flute, surrounded by gopis dancing in celestial circle, moonlit night in Brindavan forest. Each gopi sees Krishna opposite her. Radha stands radiant and privileged. Lighting: moonlight, magical blue tones, particles of divine light. Style: romantic, spiritual, cinematic.",
+      "voiceover": "Brindavan ki raatri mein Krishna ki bansuri bajna sunkar sab gopis apne ghar se nikalin. Unhe lagta tha ki Krishna unhe hi pukaara hai. Iska naam hai - Rasa Leela, prem ki leela."
+    },
+    {
+      "scene_number": 4,
+      "scene_title": "Krishna Lifts the Govardhan Mountain",
+      "image_prompt": "The magnificent moment when Krishna lifts Govardhan mountain on his little finger to protect villagers from Indra's torrential rain. Show Krishna glowing with divine power, mountain suspended, villagers sheltering below in safety, Indra watching from sky defeated. Style: heroic, powerful, mythological, 4K.",
+      "voiceover": "Indra devraj ne Krishna par gadhe ki barsat karani chahli. Lekin Krishna ne ek ungli se Govardhan parvat uthaa diya aur sab logon ko bachchya."
+    },
+    {
+      "scene_number": 5,
+      "scene_title": "Krishna Slays the Demons",
+      "image_prompt": "Krishna defeating various demons sent by Kansa: Kalia the serpent with many hoods, Putana the demoness, Aghasura the python. Show Krishna's heroic valor, divine weapons, ultimate triumph over evil. Action-packed yet spiritual. Style: mythological action painting, semi-realistic.",
+      "voiceover": "Kansa ne kayi demon bheje Krishna ko mar dalne. Lekin Yogeshwar Krishna ne unhe har ek ko pareshan kiya. Dharma ki raksha karte hue Krishna bade ho rahe the."
+    },
+    {
+      "scene_number": 6,
+      "scene_title": "The Gita - Krishna's Divine Teaching",
+      "image_prompt": "The sacred moment on Kurukshetra battlefield: Krishna seated in chariot with Arjun, both in conversation, divine light enveloping Krishna, Chakra and divine weapons visible. Background shows the vast battlefield, armies waiting. Lighting: golden, ethereal, spiritual. Style: classical, profound, beautifully rendered.",
+      "voiceover": "Kurukshetra ke maidaan mein, Arjun ke sanshaya ko dur karte hue Krishna ne Bhagavad Gita ka upadesh diya. 'Karm karo, fal ki fikr mat karo' - ये Krishna ka vidhaan tha."
+    },
+    {
+      "scene_number": 7,
+      "scene_title": "Krishna's Mahakal Roop - Universal Form",
+      "image_prompt": "Krishna's Virat Roop (cosmic form): infinite, containing all universes, thousands of arms, celestial weapons, all worlds within him. Arjun's awe and fear visible. Dazzling divine light, infinite space, cosmic energies. Style: surreal, divine, mystical, ultra high detail.",
+      "voiceover": "Krishna ne Arjun ko apna Virat Roop dikhaya - jisme poora brahmaand samaya tha. Brahmand, dev, asur, sab kuch Krishna mein tha."
+    },
+    {
+      "scene_number": 8,
+      "scene_title": "Krishna's Eternal Love and Blessing",
+      "image_prompt": "Krishna sitting peacefully, playing flute in Mathura palace, surrounded by devotees (Radha, Pandavas, gopis). Golden light, flowers blooming, devotional atmosphere. Krishna's gentle smile, hand in blessing mudra. Sunset background with temple spires. Style: serene, loving, devotional masterpiece.",
+      "voiceover": "Krishna - jo priya the, jo gyanamrut the, jo ananta prem ke srot the. Sampoorn brahmaand unhe aaj bhi prem karta hai. Jai Shri Krishna!"
+    }
+  ]
+}

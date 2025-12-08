@@ -1,0 +1,117 @@
+{
+  "job_id": "c95aacdf-deb7-4f22-a41b-35f5fbfec200",
+  "state": "success",
+  "step": "completed",
+  "progress": 100,
+  "started_at": "2025-12-04T15:02:51.867225+00:00",
+  "finished_at": "2025-12-04T15:02:53.596202+00:00",
+  "elapsed_sec": 1.7289772033691406,
+  "encoder": "simulator",
+  "resolution": "1080p",
+  "fast_path": true,
+  "proxy": true,
+  "assets": [
+    {
+      "type": "image",
+      "label": "Scene 1",
+      "path": "images/scene_1.png"
+    },
+    {
+      "type": "audio",
+      "label": "Scene 1 Audio",
+      "path": "audio/scene_1.wav"
+    },
+    {
+      "type": "srt",
+      "label": "Subtitles (EN)",
+      "path": "subs/subs_en.srt"
+    },
+    {
+      "type": "srt",
+      "label": "Subtitles (HI)",
+      "path": "subs/subs_hi.srt"
+    }
+  ],
+  "final_video_url": "/artifacts/c95aacdf-deb7-4f22-a41b-35f5fbfec200/final/final.mp4",
+  "timings": {
+    "total_ms": 1728,
+    "images_ms": 518,
+    "audio_ms": 432,
+    "subtitles_ms": 345,
+    "stitch_ms": 345,
+    "upload_ms": 86
+  },
+  "logs": [
+    {
+      "ts": "2025-12-04T15:02:51.869730+00:00",
+      "level": "info",
+      "message": "[2ms] Generating placeholder images..."
+    },
+    {
+      "ts": "2025-12-04T15:02:52.218438+00:00",
+      "level": "info",
+      "message": "[351ms] Generated 1 placeholder images"
+    },
+    {
+      "ts": "2025-12-04T15:02:52.218438+00:00",
+      "level": "info",
+      "message": "[351ms] Generating placeholder audio..."
+    },
+    {
+      "ts": "2025-12-04T15:02:52.539726+00:00",
+      "level": "info",
+      "message": "[672ms] Generated 1 audio clips"
+    },
+    {
+      "ts": "2025-12-04T15:02:52.539726+00:00",
+      "level": "info",
+      "message": "[672ms] Generating placeholder subtitles..."
+    },
+    {
+      "ts": "2025-12-04T15:02:52.791343+00:00",
+      "level": "info",
+      "message": "[924ms] Generated subtitles (en, hi)"
+    },
+    {
+      "ts": "2025-12-04T15:02:52.791343+00:00",
+      "level": "info",
+      "message": "[924ms] Creating placeholder video..."
+    },
+    {
+      "ts": "2025-12-04T15:02:53.322679+00:00",
+      "level": "info",
+      "message": "[1455ms] Created placeholder video file"
+    },
+    {
+      "ts": "2025-12-04T15:02:53.322679+00:00",
+      "level": "info",
+      "message": "[1455ms] Simulating upload..."
+    },
+    {
+      "ts": "2025-12-04T15:02:53.596202+00:00",
+      "level": "info",
+      "message": "[1728ms] Upload simulation complete"
+    },
+    {
+      "ts": "2025-12-04T15:02:53.596202+00:00",
+      "level": "info",
+      "message": "[1728ms] Job completed in 1.73s"
+    }
+  ],
+  "error": null,
+  "plan": {
+    "topic": "Self-test video",
+    "language": "en",
+    "voice": "F",
+    "scenes": [
+      {
+        "image_prompt": "test image",
+        "narration": "test narration",
+        "duration_sec": 1
+      }
+    ],
+    "fast_path": true,
+    "proxy": true,
+    "job_id": "ae56238f-c73d-43e6-800a-29f193ecee88"
+  }
+}

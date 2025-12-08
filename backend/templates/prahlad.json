@@ -1,0 +1,66 @@
+{
+  "name": "Prahlad Bhakt - The Devotee",
+  "description": "The inspiring story of young Prahlad's unwavering faith despite his demon father's attempts to destroy his devotion. A tale of courage, bhakti, and divine protection.",
+  "category": "devotional",
+  "duration_minutes": 12,
+  "language": "hindi",
+  "author": "DevotionalAI",
+  "scenes": [
+    {
+      "scene_number": 1,
+      "scene_title": "Intro + Channel Greeting",
+      "image_prompt": "Create a highly detailed cinematic portrait shot of a warm Indian female host (Arti) in a simple devotional studio set: soft marigold garlands, small brass diya on a wooden table, soft bokeh temple-lamp background. She wears a simple saree (saffron/vermillion border), light kumkum on forehead, gentle smile, folded hands. Lighting: golden rim light, devotional aura, subtle particle dust motes. Style: semi-realistic, Indian devotional art with Raja Ravi Varma brush influences, cinematic lighting, 4k, high detail.",
+      "voiceover": "Hare Krishna! Aap sabhi ko mera naam hai Arti aur mai iss channel ke madhyam se aapko bhagwan ke bhakto ka gungan karna chahti hun. Aapko acha lage toh like karein, subscribe karein aur share karein. Jai shreela Prabhupadki.\nAaj hum sunenge Prahlad Bhakt ki pavitra kahani, jo shraddha aur bhakti ki misaal hai.",
+      "notes": "Duration: 8-10s. TTS: warm Indian female, gentle reverent tone. Camera: slow 3% zoom-in. Subtitles: show intro lines exactly as spoken; split intro sentence into two subtitle lines. Use soft crossfade to Scene 2."
+    },
+    {
+      "scene_number": 2,
+      "scene_title": "Hiranyakashipu — The Proud King",
+      "image_prompt": "Depict Hiranyakashipu as a towering, proud rakshasa-king in an ornate golden palace hall, heavy jeweled armor, mace at his side, face furious yet regal. Courtiers cower in background. Architecture: ancient Indian palace with carved pillars, murals, incense smoke. Lighting: dramatic side-lighting, deep shadows, cinematic contrast. Style: semi-realistic Indian mythological painting, Pahari miniature touches, high detail. Animation potential: cloth banners sway, incense smoke drifting, subtle camera push-in.",
+      "voiceover": "Hiranyakashipu tha ek bahut balwan aur garvila raja. Usne apne pratishtha ko bhagwan ke upar rakh diya aur apne aap ko sarvashaktimaan samajhne laga.",
+      "notes": "Duration: 8-10s. Tone: serious, reverent. Camera: slow left pan across the throne. Subtitle guidance: short subtitle lines; mark 'Hiranyakashipu' in italics for emphasis if supported."
+    },
+    {
+      "scene_number": 3,
+      "scene_title": "Prahlad's Quiet Devotion",
+      "image_prompt": "Show young Prahlad, a gentle boy of 6–8 years, sitting on a low mat in a humble palace chamber, eyes closed, hands folded in pranam, soft devotional smile. He wears simple white dhoti, sacred thread, a small tilak. Light glows subtly from his chest (divine aura). Background: muted palace interior with a small wooden shrine of Lord Vishnu. Lighting: soft, warm, devotional glow. Style: semi-realistic with Raja Ravi Varma devotional warmth. Animation potential: slow breathing, glowing aura pulse, shrine flame flicker.",
+      "voiceover": "Prahlad, ek nirmal hriday bachcha, har pal Bhagwan Vishnu ka naam leta aur shraddha se pooja karta. Uski bhakti nirmal aur nirantar thi.",
+      "notes": "Duration: 10-12s. Camera: gentle dolly-in to Prahlad's face. Subtitle guidance: keep lines short for easy reading; place subtitles centrally bottom with larger font for devotional emphasis."
+    },
+    {
+      "scene_number": 4,
+      "scene_title": "Father's Anger and Attempts to Break Faith",
+      "image_prompt": "Illustrate Hiranyakashipu raging in a private chamber, pointing angrily at Prahlad. Scene montage suggestion: clips/frames of failed punishments — a teacher scolding, wild elephants held back, venomous snakes coiling but stopping, ministers looking worried. Prahlad stands calm with glowing aura. Style: cinematic montage panels, semi-realistic, Indian miniature inset frames, vibrant colors, devotional aura. Animation potential: quick cross-dissolve montage, slight shake during angry beats, glowing shield around Prahlad.",
+      "voiceover": "Raja bahut krodh mein tha. Usne bhakton ko kaha ki Prahlad ko bhatakaya jaaye. Usne kayi sazaayein di, lekin har baar Prahlad ka vishwas majboot bana raha.",
+      "notes": "Duration: 12-14s (montage). Tone: emotive, a little tension then calm. Camera: montage cuts; end on still of Prahlad. Subtitle guidance: split montage lines to match visual beats (2–3 short subtitles)."
+    },
+    {
+      "scene_number": 5,
+      "scene_title": "Holika's Bonfire Plan",
+      "image_prompt": "Create a dramatic night scene: Holika (sister of Hiranyakashipu) sits confidently on a pyre wearing a fire-resistant cloak, Prahlad seated beside her or standing protected. Holika: regal, dark saree, confident expression; Prahlad: small, calm, peaceful. Environment: open courtyard with tall flames around, villagers and guards watching in shock. Lighting: roaring fire warm light, sparks flying, cinematic contrast. Style: Indian mythological art, semi-realistic, high detail. Animation potential: dynamic flames, sparks, flickering cloak (Holika's cloak should appear to fail subtly), particles.",
+      "voiceover": "Ant mein Hiranyakashipu ne Holika ka sahara liya. Holika agni mein baithi aur Prahlad ko aag mein bhejne ka aadesh diya. Lekin bhakti ki shakti ne chamatkaar dikhaya.",
+      "notes": "Duration: 12-15s. Camera: slow circular pan around fire, then focus on Prahlad's serene face. Subtitle guidance: ensure the word 'bhakti ki shakti' gets a pause for emphasis; add subtitle cue for dramatic beat before miracle."
+    },
+    {
+      "scene_number": 6,
+      "scene_title": "Miracle — Prahlad Survives, Holika Falls",
+      "image_prompt": "Show the climax: Holika's cloak burning and failing, Holika collapsing, Prahlad standing unharmed and glowing with divine light. Close-ups of Prahlad's uplifted face, a soft halo around him, embers floating. Background: shocked onlookers, flames receding near Prahlad. Style: cinematic, devotional, semi-realistic with painterly brushstrokes reminiscent of Raja Ravi Varma. Animation potential: cloak catching fire and disintegrating, glowing light expanding from Prahlad, slow-mo embers.",
+      "voiceover": "Aag ke beech, Holika jal gayi lekin Prahlad surakshit raha. Uski bhakti ne usse bachaya. Jahaan andhkaar tha, wahan bhakti ki roshni chamki.",
+      "notes": "Duration: 10-12s. Camera: dramatic slow motion then pull back to reveal Holika collapsed. Subtitle guidance: render 'bhakti ne usse bachaya' as a single short subtitle line for impact."
+    },
+    {
+      "scene_number": 7,
+      "scene_title": "Narasimha Avatar — Divine Justice",
+      "image_prompt": "Depict the fierce and compassionate Lord Narasimha emerging from a pillar: half-lion half-man, powerful, eyes blazing divine energy, tearing the pillar or confronting Hiranyakashipu. Hiranyakashipu looks stunned, mid-attack. Environment: palace gateway with shattered pillar fragments; light rays breaking through. Style: heroic mythological art, dramatic chiaroscuro, semi-realistic with miniature detail, devotional aura. Animation potential: pillar fracturing animation, roaring light, dust and particle bursts, dramatic camera slam.",
+      "voiceover": "Tabhi Bhagwan Vishnu ne Narasimha roop dharan kiya. Veer roop mein Bhagwan ne nyay kiya aur Hiranyakashipu ko dharmik nyay mila. Prahlad ki bhakti se sab prerit hue.",
+      "notes": "Duration: 12-15s. Camera: quick impactful cut to Narasimha, then steady reveal. Subtitle guidance: use two lines; emphasize 'Narasimha roop' and 'nyay' with bold styling if supported."
+    },
+    {
+      "scene_number": 8,
+      "scene_title": "Aftermath and Blessing",
+      "image_prompt": "A peaceful sunrise scene in the restored kingdom: Prahlad blessed by elders, people offering flowers, temple bells in background, lush palace gardens. Prahlad humbly praying before a majestic Vishnu murti. Lighting: soft golden sunrise, devotional serenity, particle golden dust. Style: semi-realistic devotional tableau with Pahari miniature color palette. Animation potential: slow crane-up reveal, temple-flag waving, flower petals drifting.",
+      "voiceover": "Rajya phir se shanti mein aaya. Prahlad ki bhakti ne sabko jeeta aur dharm ki jeet hui. Humein yaad rakhna chahiye ki sacchi shraddha aur nishkapat bhakti hi sabase badi shakti hai.\nJai Shri Vishnu. Jai Prahlad. Jai Shreela Prabhupadki.",
+      "notes": "Duration: 10-12s. Camera: slow crane-up to sky, gentle vignette. Subtitle guidance: final blessing split into two short lines; add a small CTA reminder to subscribe as optional end-card subtitle."
+    }
+  ]
+}

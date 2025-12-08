@@ -1,0 +1,106 @@
+[
+  {
+    "scene": 1,
+    "title": "Intro + Channel Greeting",
+    "prompt_files": {
+      "openai": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_1_prompt_openai.txt",
+      "sd": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_1_prompt_sd.txt",
+      "runway": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_1_prompt_runway.txt",
+      "luma": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_1_prompt_luma.txt"
+    },
+    "audio": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\audio\\scene_1.mp3",
+    "srt": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\subtitles\\scene_1.srt",
+    "duration_seconds": 9.0
+  },
+  {
+    "scene": 2,
+    "title": "Hiranyakashipu — The Proud King",
+    "prompt_files": {
+      "openai": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_2_prompt_openai.txt",
+      "sd": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_2_prompt_sd.txt",
+      "runway": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_2_prompt_runway.txt",
+      "luma": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_2_prompt_luma.txt"
+    },
+    "audio": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\audio\\scene_2.mp3",
+    "srt": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\subtitles\\scene_2.srt",
+    "duration_seconds": 9.0
+  },
+  {
+    "scene": 3,
+    "title": "Prahlad's Quiet Devotion",
+    "prompt_files": {
+      "openai": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_3_prompt_openai.txt",
+      "sd": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_3_prompt_sd.txt",
+      "runway": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_3_prompt_runway.txt",
+      "luma": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_3_prompt_luma.txt"
+    },
+    "audio": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\audio\\scene_3.mp3",
+    "srt": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\subtitles\\scene_3.srt",
+    "duration_seconds": 11.0
+  },
+  {
+    "scene": 4,
+    "title": "Father's Anger and Attempts to Break Faith",
+    "prompt_files": {
+      "openai": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_4_prompt_openai.txt",
+      "sd": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_4_prompt_sd.txt",
+      "runway": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_4_prompt_runway.txt",
+      "luma": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_4_prompt_luma.txt"
+    },
+    "audio": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\audio\\scene_4.mp3",
+    "srt": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\subtitles\\scene_4.srt",
+    "duration_seconds": 13.0
+  },
+  {
+    "scene": 5,
+    "title": "Holika's Bonfire Plan",
+    "prompt_files": {
+      "openai": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_5_prompt_openai.txt",
+      "sd": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_5_prompt_sd.txt",
+      "runway": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_5_prompt_runway.txt",
+      "luma": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_5_prompt_luma.txt"
+    },
+    "audio": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\audio\\scene_5.mp3",
+    "srt": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\subtitles\\scene_5.srt",
+    "duration_seconds": 13.5
+  },
+  {
+    "scene": 6,
+    "title": "Miracle — Prahlad Survives, Holika Falls",
+    "prompt_files": {
+      "openai": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_6_prompt_openai.txt",
+      "sd": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_6_prompt_sd.txt",
+      "runway": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_6_prompt_runway.txt",
+      "luma": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_6_prompt_luma.txt"
+    },
+    "audio": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\audio\\scene_6.mp3",
+    "srt": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\subtitles\\scene_6.srt",
+    "duration_seconds": 11.0
+  },
+  {
+    "scene": 7,
+    "title": "Narasimha Avatar — Divine Justice",
+    "prompt_files": {
+      "openai": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_7_prompt_openai.txt",
+      "sd": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_7_prompt_sd.txt",
+      "runway": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_7_prompt_runway.txt",
+      "luma": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_7_prompt_luma.txt"
+    },
+    "audio": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\audio\\scene_7.mp3",
+    "srt": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\subtitles\\scene_7.srt",
+    "duration_seconds": 13.5
+  },
+  {
+    "scene": 8,
+    "title": "Aftermath and Blessing",
+    "prompt_files": {
+      "openai": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_8_prompt_openai.txt",
+      "sd": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_8_prompt_sd.txt",
+      "runway": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_8_prompt_runway.txt",
+      "luma": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\prompts\\scene_8_prompt_luma.txt"
+    },
+    "audio": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\audio\\scene_8.mp3",
+    "srt": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\subtitles\\scene_8.srt",
+    "duration_seconds": 11.0
+  }
+]

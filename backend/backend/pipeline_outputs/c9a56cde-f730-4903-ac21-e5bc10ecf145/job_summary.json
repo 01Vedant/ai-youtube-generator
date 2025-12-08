@@ -1,0 +1,150 @@
+{
+  "job_id": "c9a56cde-f730-4903-ac21-e5bc10ecf145",
+  "state": "success",
+  "step": "completed",
+  "progress": 100,
+  "started_at": "2025-12-05T09:00:02.265267+00:00",
+  "finished_at": "2025-12-05T09:00:04.373877+00:00",
+  "elapsed_sec": 2.1086106300354004,
+  "encoder": "simulator",
+  "resolution": "1080p",
+  "fast_path": true,
+  "proxy": true,
+  "assets": [
+    {
+      "type": "image",
+      "label": "Scene 1",
+      "path": "images/scene_1.png"
+    },
+    {
+      "type": "image",
+      "label": "Scene 2",
+      "path": "images/scene_2.png"
+    },
+    {
+      "type": "audio",
+      "label": "Scene 1 Audio",
+      "path": "audio/scene_1.wav"
+    },
+    {
+      "type": "audio",
+      "label": "Scene 2 Audio",
+      "path": "audio/scene_2.wav"
+    },
+    {
+      "type": "srt",
+      "label": "Subtitles (EN)",
+      "path": "subs/subs_en.srt"
+    },
+    {
+      "type": "srt",
+      "label": "Subtitles (HI)",
+      "path": "subs/subs_hi.srt"
+    }
+  ],
+  "final_video_url": "/artifacts/c9a56cde-f730-4903-ac21-e5bc10ecf145/final_video.mp4",
+  "templates": {
+    "applied": true,
+    "count": 4
+  },
+  "timings": {
+    "total_ms": 2108,
+    "images_ms": 632,
+    "audio_ms": 527,
+    "subtitles_ms": 421,
+    "stitch_ms": 421,
+    "upload_ms": 105
+  },
+  "logs": [
+    {
+      "ts": "2025-12-05T09:00:02.265267+00:00",
+      "level": "info",
+      "message": "[0ms] Generating placeholder images..."
+    },
+    {
+      "ts": "2025-12-05T09:00:02.718516+00:00",
+      "level": "info",
+      "message": "[453ms] Generated 2 placeholder images"
+    },
+    {
+      "ts": "2025-12-05T09:00:02.718516+00:00",
+      "level": "info",
+      "message": "[453ms] Generating placeholder audio..."
+    },
+    {
+      "ts": "2025-12-05T09:00:03.203172+00:00",
+      "level": "info",
+      "message": "[937ms] Generated 2 audio clips"
+    },
+    {
+      "ts": "2025-12-05T09:00:03.203172+00:00",
+      "level": "info",
+      "message": "[937ms] Generating placeholder subtitles..."
+    },
+    {
+      "ts": "2025-12-05T09:00:03.524624+00:00",
+      "level": "info",
+      "message": "[1259ms] Generated subtitles (en, hi)"
+    },
+    {
+      "ts": "2025-12-05T09:00:03.529716+00:00",
+      "level": "info",
+      "message": "[1264ms] Applying motion templates..."
+    },
+    {
+      "ts": "2025-12-05T09:00:03.530729+00:00",
+      "level": "info",
+      "message": "[1265ms] Motion templates applied: 4 filters"
+    },
+    {
+      "ts": "2025-12-05T09:00:03.530729+00:00",
+      "level": "info",
+      "message": "[1265ms] Creating placeholder video..."
+    },
+    {
+      "ts": "2025-12-05T09:00:04.108278+00:00",
+      "level": "info",
+      "message": "[1843ms] Created final_video.mp4 (normalized location)"
+    },
+    {
+      "ts": "2025-12-05T09:00:04.108278+00:00",
+      "level": "info",
+      "message": "[1843ms] Simulating upload..."
+    },
+    {
+      "ts": "2025-12-05T09:00:04.373877+00:00",
+      "level": "info",
+      "message": "[2108ms] Upload simulation complete"
+    },
+    {
+      "ts": "2025-12-05T09:00:04.373877+00:00",
+      "level": "info",
+      "message": "[2108ms] Job completed in 2.11s"
+    }
+  ],
+  "error": null,
+  "plan": {
+    "topic": "Phase 1 Fixed Test",
+    "language": "en",
+    "voice": "F",
+    "scenes": [
+      {
+        "image_prompt": "temple",
+        "narration": "test",
+        "duration_sec": 3
+      },
+      {
+        "image_prompt": "mountain",
+        "narration": "test2",
+        "duration_sec": 3
+      }
+    ],
+    "fast_path": true,
+    "proxy": true,
+    "enable_parallax": true,
+    "enable_templates": true,
+    "enable_audio_sync": true,
+    "quality": "final",
+    "job_id": "c9a56cde-f730-4903-ac21-e5bc10ecf145"
+  }
+}

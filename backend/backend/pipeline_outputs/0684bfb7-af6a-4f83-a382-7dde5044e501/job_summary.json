@@ -1,0 +1,71 @@
+{
+  "job_id": "0684bfb7-af6a-4f83-a382-7dde5044e501",
+  "state": "error",
+  "step": "error",
+  "progress": 0,
+  "started_at": "2025-12-05T08:21:42.016949+00:00",
+  "finished_at": "2025-12-05T08:21:43.269701+00:00",
+  "error": "name 'tiny_mp4' is not defined",
+  "logs": [
+    {
+      "ts": "2025-12-05T08:21:42.018396+00:00",
+      "level": "info",
+      "message": "[1ms] Generating placeholder images..."
+    },
+    {
+      "ts": "2025-12-05T08:21:42.489195+00:00",
+      "level": "info",
+      "message": "[472ms] Generated 2 placeholder images"
+    },
+    {
+      "ts": "2025-12-05T08:21:42.489195+00:00",
+      "level": "info",
+      "message": "[472ms] Generating placeholder audio..."
+    },
+    {
+      "ts": "2025-12-05T08:21:42.940756+00:00",
+      "level": "info",
+      "message": "[923ms] Generated 2 audio clips"
+    },
+    {
+      "ts": "2025-12-05T08:21:42.940756+00:00",
+      "level": "info",
+      "message": "[923ms] Generating placeholder subtitles..."
+    },
+    {
+      "ts": "2025-12-05T08:21:43.269701+00:00",
+      "level": "info",
+      "message": "[1252ms] Generated subtitles (en, hi)"
+    },
+    {
+      "ts": "2025-12-05T08:21:43.269701+00:00",
+      "level": "info",
+      "message": "[1252ms] Creating placeholder video..."
+    },
+    {
+      "ts": "2025-12-05T08:21:43.269701+00:00",
+      "level": "info",
+      "message": "[1252ms] ERROR: name 'tiny_mp4' is not defined"
+    }
+  ],
+  "plan": {
+    "topic": "Bhagavad Gita Wisdom",
+    "language": "en",
+    "voice": "F",
+    "scenes": [
+      {
+        "image_prompt": "Krishna on the battlefield with Arjuna, golden divine light",
+        "narration": "In the moment of despair, Krishna counsels Arjuna with divine wisdom",
+        "duration_sec": 4
+      },
+      {
+        "image_prompt": "Arjuna with bow and arrow, determined expression, epic battlefield",
+        "narration": "Arjuna rises with newfound clarity and purpose from teachings",
+        "duration_sec": 4
+      }
+    ],
+    "fast_path": true,
+    "proxy": true,
+    "job_id": "ca453045-e207-485a-8eb7-e634fde1567d"
+  }
+}

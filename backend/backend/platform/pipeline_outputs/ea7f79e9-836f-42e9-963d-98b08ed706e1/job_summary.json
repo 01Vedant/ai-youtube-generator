@@ -1,0 +1,94 @@
+{
+  "job_id": "ea7f79e9-836f-42e9-963d-98b08ed706e1",
+  "state": "success",
+  "step": "completed",
+  "progress": 100,
+  "started_at": "2025-12-04T14:21:06.419329+00:00",
+  "finished_at": "2025-12-04T14:21:08.261206+00:00",
+  "elapsed_sec": 1.8418762683868408,
+  "encoder": "simulator",
+  "resolution": "1080p",
+  "fast_path": true,
+  "proxy": true,
+  "assets": [
+    {
+      "type": "image",
+      "label": "Scene 1",
+      "url": "/outputs/ea7f79e9-836f-42e9-963d-98b08ed706e1/images/scene_1.png"
+    },
+    {
+      "type": "audio",
+      "label": "Scene 1 Audio",
+      "url": "/outputs/ea7f79e9-836f-42e9-963d-98b08ed706e1/audio/scene_1.wav"
+    },
+    {
+      "type": "srt",
+      "label": "Subtitles (EN)",
+      "url": "/outputs/ea7f79e9-836f-42e9-963d-98b08ed706e1/subs/subs_en.srt"
+    },
+    {
+      "type": "srt",
+      "label": "Subtitles (HI)",
+      "url": "/outputs/ea7f79e9-836f-42e9-963d-98b08ed706e1/subs/subs_hi.srt"
+    }
+  ],
+  "final_video_url": "/outputs/ea7f79e9-836f-42e9-963d-98b08ed706e1/final/final.mp4",
+  "logs": [
+    {
+      "ts": "2025-12-04T14:21:06.420630+00:00",
+      "level": "info",
+      "message": "[1ms] Generating placeholder images..."
+    },
+    {
+      "ts": "2025-12-04T14:21:06.751828+00:00",
+      "level": "info",
+      "message": "[332ms] Generated 1 placeholder images"
+    },
+    {
+      "ts": "2025-12-04T14:21:06.751828+00:00",
+      "level": "info",
+      "message": "[332ms] Generating placeholder audio..."
+    },
+    {
+      "ts": "2025-12-04T14:21:07.105928+00:00",
+      "level": "info",
+      "message": "[686ms] Generated 1 audio clips"
+    },
+    {
+      "ts": "2025-12-04T14:21:07.105928+00:00",
+      "level": "info",
+      "message": "[686ms] Generating placeholder subtitles..."
+    },
+    {
+      "ts": "2025-12-04T14:21:07.416381+00:00",
+      "level": "info",
+      "message": "[997ms] Generated subtitles (en, hi)"
+    },
+    {
+      "ts": "2025-12-04T14:21:07.416773+00:00",
+      "level": "info",
+      "message": "[997ms] Creating placeholder video..."
+    },
+    {
+      "ts": "2025-12-04T14:21:08.014177+00:00",
+      "level": "info",
+      "message": "[1594ms] Created placeholder video file"
+    },
+    {
+      "ts": "2025-12-04T14:21:08.014177+00:00",
+      "level": "info",
+      "message": "[1594ms] Simulating upload..."
+    },
+    {
+      "ts": "2025-12-04T14:21:08.257704+00:00",
+      "level": "info",
+      "message": "[1838ms] Upload simulation complete"
+    },
+    {
+      "ts": "2025-12-04T14:21:08.261206+00:00",
+      "level": "info",
+      "message": "[1841ms] Job completed in 1.84s"
+    }
+  ],
+  "error": null
+}

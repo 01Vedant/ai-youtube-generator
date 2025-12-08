@@ -1,0 +1,182 @@
+{
+  "job_id": "2930638b-3e03-48ca-b904-88934c266dbd",
+  "state": "success",
+  "step": "completed",
+  "progress": 100,
+  "started_at": "2025-12-06T19:01:41.508755+00:00",
+  "finished_at": "2025-12-06T19:01:43.595955+00:00",
+  "elapsed_sec": 2.0871999263763428,
+  "encoder": "simulator",
+  "resolution": "1080p",
+  "fast_path": true,
+  "proxy": true,
+  "assets": [
+    {
+      "type": "image",
+      "label": "Scene 1",
+      "path": "images/scene_1.png"
+    },
+    {
+      "type": "audio",
+      "label": "Scene 1 Audio",
+      "path": "audio/scene_1.wav"
+    },
+    {
+      "type": "srt",
+      "label": "Subtitles (EN)",
+      "path": "subs/subs_en.srt"
+    },
+    {
+      "type": "srt",
+      "label": "Subtitles (HI)",
+      "path": "subs/subs_hi.srt"
+    }
+  ],
+  "final_video_url": "/artifacts/2930638b-3e03-48ca-b904-88934c266dbd/final_video.mp4",
+  "templates": {
+    "applied": true,
+    "count": 3
+  },
+  "parallax": {
+    "applied": true,
+    "scenes": 1
+  },
+  "audio_director": {
+    "beats_used": 50,
+    "ducking_applied": true
+  },
+  "profile": {
+    "name": "final",
+    "resolution": "1080p",
+    "fps": 30
+  },
+  "qa": {
+    "status": "ok"
+  },
+  "timings": {
+    "total_ms": 2087,
+    "images_ms": 626,
+    "audio_ms": 521,
+    "subtitles_ms": 417,
+    "stitch_ms": 417,
+    "upload_ms": 104
+  },
+  "logs": [
+    {
+      "ts": "2025-12-06T19:01:41.508755+00:00",
+      "level": "info",
+      "message": "[0ms] Generating placeholder images..."
+    },
+    {
+      "ts": "2025-12-06T19:01:41.958063+00:00",
+      "level": "info",
+      "message": "[449ms] Generated 1 placeholder images"
+    },
+    {
+      "ts": "2025-12-06T19:01:41.958063+00:00",
+      "level": "info",
+      "message": "[449ms] Generating audio..."
+    },
+    {
+      "ts": "2025-12-06T19:01:41.958063+00:00",
+      "level": "info",
+      "message": "[449ms] [TTS] language=en voice_id=None provider=edge"
+    },
+    {
+      "ts": "2025-12-06T19:01:42.328180+00:00",
+      "level": "info",
+      "message": "[819ms] Audio generation complete"
+    },
+    {
+      "ts": "2025-12-06T19:01:42.328180+00:00",
+      "level": "info",
+      "message": "[819ms] Generating placeholder subtitles..."
+    },
+    {
+      "ts": "2025-12-06T19:01:42.650322+00:00",
+      "level": "info",
+      "message": "[1141ms] Generated subtitles (en, hi)"
+    },
+    {
+      "ts": "2025-12-06T19:01:42.650322+00:00",
+      "level": "info",
+      "message": "[1141ms] Applying motion templates..."
+    },
+    {
+      "ts": "2025-12-06T19:01:42.650322+00:00",
+      "level": "info",
+      "message": "[1141ms] Motion templates applied: 3 filters"
+    },
+    {
+      "ts": "2025-12-06T19:01:42.738465+00:00",
+      "level": "info",
+      "message": "[1229ms] Applying 2.5D parallax motion..."
+    },
+    {
+      "ts": "2025-12-06T19:01:42.738465+00:00",
+      "level": "info",
+      "message": "[1229ms] Parallax applied to 1 scenes"
+    },
+    {
+      "ts": "2025-12-06T19:01:42.741185+00:00",
+      "level": "info",
+      "message": "[1232ms] Detecting audio beats..."
+    },
+    {
+      "ts": "2025-12-06T19:01:42.741185+00:00",
+      "level": "info",
+      "message": "[1232ms] Audio sync: 50 beats detected, ducking applied"
+    },
+    {
+      "ts": "2025-12-06T19:01:42.741185+00:00",
+      "level": "info",
+      "message": "[1232ms] Creating placeholder video..."
+    },
+    {
+      "ts": "2025-12-06T19:01:43.335868+00:00",
+      "level": "info",
+      "message": "[1827ms] Created final_video.mp4 (normalized location)"
+    },
+    {
+      "ts": "2025-12-06T19:01:43.335868+00:00",
+      "level": "info",
+      "message": "[1827ms] Simulating upload..."
+    },
+    {
+      "ts": "2025-12-06T19:01:43.595955+00:00",
+      "level": "info",
+      "message": "[2087ms] Upload simulation complete"
+    },
+    {
+      "ts": "2025-12-06T19:01:43.595955+00:00",
+      "level": "info",
+      "message": "[2087ms] Job completed in 2.09s"
+    },
+    {
+      "ts": "2025-12-06T19:01:43.595955+00:00",
+      "level": "info",
+      "message": "[2087ms] QA checks: 3/3 passed"
+    }
+  ],
+  "error": null,
+  "plan": {
+    "topic": "Queue Test",
+    "language": "en",
+    "voice": "F",
+    "voice_id": null,
+    "scenes": [
+      {
+        "image_prompt": "alpha",
+        "narration": "bravo",
+        "duration_sec": 1.0
+      }
+    ],
+    "fast_path": true,
+    "proxy": true,
+    "enable_parallax": true,
+    "enable_templates": true,
+    "enable_audio_sync": true,
+    "quality": "final",
+    "job_id": "2930638b-3e03-48ca-b904-88934c266dbd"
+  }
+}

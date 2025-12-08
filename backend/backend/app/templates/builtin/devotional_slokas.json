@@ -1,0 +1,16 @@
+{
+  "id": "5e6f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9012",
+  "title": "Devotional Slokas",
+  "description": "Chant and explain devotional slokas.",
+  "category": "devotional",
+  "thumb": "/static/thumbs/devotional_slokas.png",
+  "visibility": "builtin",
+  "user_id": "system",
+  "plan_json": {
+    "title": "Sloka",
+    "scenes": [
+      { "text": "Sloka: Om Namah Shivaya", "duration": 2 },
+      { "text": "Meaning: I bow to Lord Shiva.", "duration": 2 }
+    ]
+  }
+}

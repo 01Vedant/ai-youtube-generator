@@ -1,0 +1,16 @@
+{
+  "id": "8d9e0f1a-2b3c-4d5e-6f70-8192a3b4c5d6",
+  "title": "AI Narrated Mythology",
+  "description": "Short mythological facts narrated by AI.",
+  "category": "stories",
+  "thumb": "/static/thumbs/ai_narrated_mythology.png",
+  "visibility": "builtin",
+  "user_id": "system",
+  "plan_json": {
+    "title": "Mythology Fact",
+    "scenes": [
+      { "text": "Fact: The Trimurti represents creation, preservation, and destruction.", "duration": 2 },
+      { "text": "Narration: Brahma, Vishnu, and Shiva embody these forces.", "duration": 2 }
+    ]
+  }
+}

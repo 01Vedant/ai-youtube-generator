@@ -1,0 +1,132 @@
+{
+  "job_id": "bc8bac17-c9aa-45e2-972b-61ae4e1922b2",
+  "state": "success",
+  "step": "completed",
+  "progress": 100,
+  "started_at": "2025-12-05T07:09:01.646722+00:00",
+  "finished_at": "2025-12-05T07:09:03.610075+00:00",
+  "elapsed_sec": 1.9633536338806152,
+  "encoder": "simulator",
+  "resolution": "1080p",
+  "fast_path": true,
+  "proxy": true,
+  "assets": [
+    {
+      "type": "image",
+      "label": "Scene 1",
+      "path": "images/scene_1.png"
+    },
+    {
+      "type": "image",
+      "label": "Scene 2",
+      "path": "images/scene_2.png"
+    },
+    {
+      "type": "audio",
+      "label": "Scene 1 Audio",
+      "path": "audio/scene_1.wav"
+    },
+    {
+      "type": "audio",
+      "label": "Scene 2 Audio",
+      "path": "audio/scene_2.wav"
+    },
+    {
+      "type": "srt",
+      "label": "Subtitles (EN)",
+      "path": "subs/subs_en.srt"
+    },
+    {
+      "type": "srt",
+      "label": "Subtitles (HI)",
+      "path": "subs/subs_hi.srt"
+    }
+  ],
+  "final_video_url": "/artifacts/bc8bac17-c9aa-45e2-972b-61ae4e1922b2/final/final.mp4",
+  "timings": {
+    "total_ms": 1963,
+    "images_ms": 588,
+    "audio_ms": 490,
+    "subtitles_ms": 392,
+    "stitch_ms": 392,
+    "upload_ms": 98
+  },
+  "logs": [
+    {
+      "ts": "2025-12-05T07:09:01.648731+00:00",
+      "level": "info",
+      "message": "[2ms] Generating placeholder images..."
+    },
+    {
+      "ts": "2025-12-05T07:09:02.125430+00:00",
+      "level": "info",
+      "message": "[478ms] Generated 2 placeholder images"
+    },
+    {
+      "ts": "2025-12-05T07:09:02.125430+00:00",
+      "level": "info",
+      "message": "[478ms] Generating placeholder audio..."
+    },
+    {
+      "ts": "2025-12-05T07:09:02.502390+00:00",
+      "level": "info",
+      "message": "[855ms] Generated 2 audio clips"
+    },
+    {
+      "ts": "2025-12-05T07:09:02.503021+00:00",
+      "level": "info",
+      "message": "[856ms] Generating placeholder subtitles..."
+    },
+    {
+      "ts": "2025-12-05T07:09:02.801757+00:00",
+      "level": "info",
+      "message": "[1155ms] Generated subtitles (en, hi)"
+    },
+    {
+      "ts": "2025-12-05T07:09:02.801757+00:00",
+      "level": "info",
+      "message": "[1155ms] Creating placeholder video..."
+    },
+    {
+      "ts": "2025-12-05T07:09:03.339540+00:00",
+      "level": "info",
+      "message": "[1692ms] Created placeholder video file"
+    },
+    {
+      "ts": "2025-12-05T07:09:03.339540+00:00",
+      "level": "info",
+      "message": "[1692ms] Simulating upload..."
+    },
+    {
+      "ts": "2025-12-05T07:09:03.610075+00:00",
+      "level": "info",
+      "message": "[1963ms] Upload simulation complete"
+    },
+    {
+      "ts": "2025-12-05T07:09:03.610411+00:00",
+      "level": "info",
+      "message": "[1963ms] Job completed in 1.96s"
+    }
+  ],
+  "error": null,
+  "plan": {
+    "topic": "Bhagavad Gita",
+    "language": "en",
+    "voice": "F",
+    "scenes": [
+      {
+        "image_prompt": "Krishna guiding Arjuna on the battlefield, epic, golden light, cinematic",
+        "narration": "In his doubt, Arjuna seeks counsel; Krishna reveals timeless wisdom.",
+        "duration_sec": 3
+      },
+      {
+        "image_prompt": "Arjuna aiming his bow on the chariot at Kurukshetra, dynamic, dramatic sky",
+        "narration": "Resolved by duty and clarity, Arjuna prepares to act.",
+        "duration_sec": 3
+      }
+    ],
+    "fast_path": true,
+    "proxy": true,
+    "job_id": "e2912d9c-d0f1-43c0-86e6-1a2d53c6fc00"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "7b5d2f2a-1c3e-4d9c-8a7f-2e1b3c4d5e62",
+  "title": "Shiva Stories",
+  "description": "Mythological tales and symbols of Lord Shiva.",
+  "category": "stories",
+  "thumb": "/static/thumbs/shiva_stories.png",
+  "visibility": "builtin",
+  "user_id": "system",
+  "plan_json": {
+    "title": "Shiva Story",
+    "scenes": [
+      { "text": "Scene 1: Why Shiva wears the crescent moon", "duration": 2 },
+      { "text": "Scene 2: Meaning behind Ganga in his hair", "duration": 2 }
+    ]
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RenderPlan",
+  "description": "JSON Schema for video render plan validation",
+  "type": "object",
+  "required": ["topic", "language", "voice", "length", "style", "scenes"],
+  "properties": {
+    "topic": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Video topic or title"
+    },
+    "language": {
+      "type": "string",
+      "enum": ["en", "hi"],
+      "description": "Narration language"
+    },
+    "voice": {
+      "type": "string",
+      "enum": ["F", "M"],
+      "description": "Voice gender"
+    },
+    "length": {
+      "type": "integer",
+      "minimum": 10,
+      "maximum": 600,
+      "description": "Total video length in seconds"
+    },
+    "style": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "Visual style (e.g., cinematic, vibrant)"
+    },
+    "scenes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "required": ["prompt", "narration", "duration"],
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "description": "Image generation prompt"
+          },
+          "narration": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000,
+            "description": "Scene narration text"
+          },
+          "duration": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 20,
+            "description": "Scene duration in seconds"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "fast_path": {
+      "type": "boolean",
+      "description": "Enable GPU fast-path rendering"
+    },
+    "render_mode": {
+      "type": "string",
+      "enum": ["PROXY", "FINAL"],
+      "description": "Render quality mode"
+    },
+    "target_res": {
+      "type": "string",
+      "enum": ["720p", "1080p", "4k"],
+      "description": "Target resolution"
+    },
+    "encoder": {
+      "type": "string",
+      "enum": ["h264_nvenc", "hevc_nvenc", "libx264"],
+      "description": "Video encoder"
+    },
+    "watermark_path": {
+      "type": "string",
+      "description": "Path to watermark image"
+    },
+    "soft_subtitles": {
+      "type": "boolean",
+      "description": "Include soft subtitles"
+    },
+    "burn_in_subtitles": {
+      "type": "boolean",
+      "description": "Burn subtitles into video"
+    },
+    "enable_youtube_upload": {
+      "type": "boolean",
+      "description": "Upload to YouTube after rendering"
+    }
+  },
+  "additionalProperties": true
+}

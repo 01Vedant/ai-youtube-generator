@@ -1,0 +1,152 @@
+version: '3.9'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: devotionalai-postgres
+    environment:
+      POSTGRES_DB: devotionalai
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: devpassword
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devuser"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for job queue
+  redis:
+    image: redis:7-alpine
+    container_name: devotionalai-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # FastAPI Backend
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: devotionalai-backend
+    environment:
+      DEBUG: "True"
+      DATABASE_URL: "postgresql://devuser:devpassword@postgres:5432/devotionalai"
+      CELERY_BROKER_URL: "redis://redis:6379/0"
+      CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+      SECRET_KEY: "dev-secret-key-change-in-production"
+      USE_S3: "False"
+      LOCAL_STORAGE_PATH: "/app/storage"
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-""}
+      ELEVENLABS_API_KEY: ${ELEVENLABS_API_KEY:-""}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./storage:/app/storage
+      - ../templates:/app/templates
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Celery TTS Worker
+  worker_tts:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: devotionalai-worker-tts
+    environment:
+      DEBUG: "False"
+      DATABASE_URL: "postgresql://devuser:devpassword@postgres:5432/devotionalai"
+      CELERY_BROKER_URL: "redis://redis:6379/0"
+      CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+      ELEVENLABS_API_KEY: ${ELEVENLABS_API_KEY:-""}
+    volumes:
+      - ./storage:/app/storage
+    depends_on:
+      - redis
+      - postgres
+    command: celery -A app.celery_config worker -Q tts --loglevel=info
+    profiles:
+      - workers
+
+  # Celery Image Worker
+  worker_images:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: devotionalai-worker-images
+    environment:
+      DEBUG: "False"
+      DATABASE_URL: "postgresql://devuser:devpassword@postgres:5432/devotionalai"
+      CELERY_BROKER_URL: "redis://redis:6379/0"
+      CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-""}
+    volumes:
+      - ./storage:/app/storage
+    depends_on:
+      - redis
+      - postgres
+    command: celery -A app.celery_config worker -Q images --loglevel=info
+    profiles:
+      - workers
+
+  # Celery Video Worker (GPU-enabled)
+  worker_video:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: devotionalai-worker-video
+    environment:
+      DEBUG: "False"
+      DATABASE_URL: "postgresql://devuser:devpassword@postgres:5432/devotionalai"
+      CELERY_BROKER_URL: "redis://redis:6379/0"
+      CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+    volumes:
+      - ./storage:/app/storage
+    depends_on:
+      - redis
+      - postgres
+    command: celery -A app.celery_config worker -Q videos --concurrency=1 --loglevel=info
+    profiles:
+      - workers
+
+  # React Frontend
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: devotionalai-frontend
+    environment:
+      VITE_API_URL: "http://localhost:8000/api/v1"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ../frontend/src:/app/src
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  default:
+    name: devotionalai-network

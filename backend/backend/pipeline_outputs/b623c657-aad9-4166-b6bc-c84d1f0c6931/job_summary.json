@@ -1,0 +1,71 @@
+{
+  "job_id": "b623c657-aad9-4166-b6bc-c84d1f0c6931",
+  "state": "error",
+  "step": "error",
+  "progress": 0,
+  "started_at": "2025-12-05T08:10:07.504874+00:00",
+  "finished_at": "2025-12-05T08:10:08.750740+00:00",
+  "error": "name 'tiny_mp4' is not defined",
+  "logs": [
+    {
+      "ts": "2025-12-05T08:10:07.507030+00:00",
+      "level": "info",
+      "message": "[2ms] Generating placeholder images..."
+    },
+    {
+      "ts": "2025-12-05T08:10:07.949409+00:00",
+      "level": "info",
+      "message": "[444ms] Generated 2 placeholder images"
+    },
+    {
+      "ts": "2025-12-05T08:10:07.949409+00:00",
+      "level": "info",
+      "message": "[444ms] Generating placeholder audio..."
+    },
+    {
+      "ts": "2025-12-05T08:10:08.401821+00:00",
+      "level": "info",
+      "message": "[896ms] Generated 2 audio clips"
+    },
+    {
+      "ts": "2025-12-05T08:10:08.401821+00:00",
+      "level": "info",
+      "message": "[896ms] Generating placeholder subtitles..."
+    },
+    {
+      "ts": "2025-12-05T08:10:08.749606+00:00",
+      "level": "info",
+      "message": "[1244ms] Generated subtitles (en, hi)"
+    },
+    {
+      "ts": "2025-12-05T08:10:08.749606+00:00",
+      "level": "info",
+      "message": "[1244ms] Creating placeholder video..."
+    },
+    {
+      "ts": "2025-12-05T08:10:08.749606+00:00",
+      "level": "info",
+      "message": "[1244ms] ERROR: name 'tiny_mp4' is not defined"
+    }
+  ],
+  "plan": {
+    "topic": "Bhagavad Gita",
+    "language": "en",
+    "voice": "F",
+    "scenes": [
+      {
+        "image_prompt": "Krishna guiding Arjuna, cinematic, golden light",
+        "narration": "Krishna reveals wisdom.",
+        "duration_sec": 3
+      },
+      {
+        "image_prompt": "Arjuna aiming bow on chariot, dramatic sky",
+        "narration": "Arjuna prepares to act.",
+        "duration_sec": 3
+      }
+    ],
+    "fast_path": true,
+    "proxy": true,
+    "job_id": "3bfeee92-8ad3-4324-bf63-9a2b2e9fbba0"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "1a2b3c4d-5e6f-7081-92a3-b4c5d6e7f801",
+  "title": "Motivational Shorts",
+  "description": "Quick motivational messages for daily inspiration.",
+  "category": "shorts",
+  "thumb": "/static/thumbs/motivational_shorts.png",
+  "visibility": "builtin",
+  "user_id": "system",
+  "plan_json": {
+    "title": "Motivation",
+    "scenes": [
+      { "text": "Tip: Start small, stay consistent.", "duration": 2 },
+      { "text": "Remember: Progress beats perfection.", "duration": 2 }
+    ]
+  }
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "scene": 1,
+    "srt": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\subtitles\\scene_1.srt",
+    "duration_seconds": 9.0
+  },
+  {
+    "scene": 2,
+    "srt": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\subtitles\\scene_2.srt",
+    "duration_seconds": 9.0
+  },
+  {
+    "scene": 3,
+    "srt": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\subtitles\\scene_3.srt",
+    "duration_seconds": 11.0
+  },
+  {
+    "scene": 4,
+    "srt": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\subtitles\\scene_4.srt",
+    "duration_seconds": 13.0
+  },
+  {
+    "scene": 5,
+    "srt": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\subtitles\\scene_5.srt",
+    "duration_seconds": 13.5
+  },
+  {
+    "scene": 6,
+    "srt": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\subtitles\\scene_6.srt",
+    "duration_seconds": 11.0
+  },
+  {
+    "scene": 7,
+    "srt": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\subtitles\\scene_7.srt",
+    "duration_seconds": 13.5
+  },
+  {
+    "scene": 8,
+    "srt": "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\assets\\subtitles\\scene_8.srt",
+    "duration_seconds": 11.0
+  }
+]
