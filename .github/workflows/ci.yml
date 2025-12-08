@@ -16,6 +16,7 @@ jobs:
           node-version: 20
 
       - name: Install, Typecheck, and Build Frontend
+        working-directory: backend/frontend
         run: |
           cd frontend
           npm install
