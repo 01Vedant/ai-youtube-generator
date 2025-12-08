@@ -1,20 +1,30 @@
-﻿# Node modules
-node_modules/
-
-# Build outputs
-dist/
-build/
-.vite/
-
-# Logs and system files
-*.log
+﻿# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+*.egg-info/
+.venv/
 .env
-*.tsbuildinfo
+.env.*
 
-# IDE files
+# Node / Frontend
+node_modules/
+dist/
+coverage/
+.vite/
+.playwright/
+artifacts/
+*.log
+
+# OS / Editors
+.DS_Store
+Thumbs.db
 .vscode/
 .idea/
 
-# OS junk
-.DS_Store
-Thumbs.db
+# Build outputs
+*.mp4
+*.wav
+artifacts/
