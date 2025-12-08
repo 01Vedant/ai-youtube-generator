@@ -18,7 +18,6 @@ jobs:
       - name: Install, Typecheck, and Build Frontend
         working-directory: backend/frontend
         run: |
-          cd frontend
           npm install
           npm run typecheck
           npm run build
