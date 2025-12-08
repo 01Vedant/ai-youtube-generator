@@ -1,23 +1,24 @@
-// Moved to _disabled
-
-// The original content of the LandingPage component is no longer available.
-export default function LandingPage() {
-  return <div style={{ padding: 24 }}>Landing is not configured in this build.</div>;
-}
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSeo } from '@/src/seo';
-import { PublicShell } from '@/src/components/PublicShell';
+import { useSeo } from '@/seo';
+import { PublicShell } from '@/components/PublicShell';
 import { startRender } from '@/lib/api';
 
-export default function LandingPage() {
-  useSeo({ title: 'DevotionalAI — Create devotional videos', description: 'Generate educational and devotional short videos.' });
+function Bullet({ title, desc }: { title: string; desc: string }) {
+  return (
+    <div style={{ border: '1px solid #eee', borderRadius: 8, padding: 16 }}>
+      <h3 style={{ marginTop: 0 }}>{title}</h3>
+      <p style={{ color: '#555' }}>{desc}</p>
+    </div>
+  );
+}
+
+export default function LandingPage(): JSX.Element {
+  useSeo({ title: 'DevotionalAI - Create devotional videos', description: 'Generate educational and devotional short videos.' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const PUBLIC_ENABLED = import.meta.env.VITE_PUBLIC_ENABLED === 'true';
-  const SIMULATE_RENDER = window.__SIMULATE_RENDER === 1 || import.meta.env.SIMULATE_RENDER === '1' || true;
 
   const handleDemo = async () => {
     setLoading(true);
@@ -28,7 +29,6 @@ export default function LandingPage() {
       navigate(`/render/${res.job_id}`);
     } catch (e) {
       setError('Failed to start demo. Please try again.');
-      // eslint-disable-next-line no-console
       console.error(e);
     } finally {
       setLoading(false);
@@ -56,7 +56,7 @@ export default function LandingPage() {
             onClick={handleDemo}
             disabled={loading || !PUBLIC_ENABLED}
           >
-            {loading ? 'Starting…' : 'Try a Sample Video'}
+            {loading ? 'Starting...' : 'Try a Sample Video'}
           </button>
         </section>
         <footer style={{ textAlign: 'center', marginTop: 40 }}>
@@ -65,22 +65,4 @@ export default function LandingPage() {
       </div>
     </PublicShell>
   );
-}
-
-
-function Bullet({ title, desc }: { title: string; desc: string }) {
-  return (
-    <div style={{ border: '1px solid #eee', borderRadius: 8, padding: 16 }}>
-      <h3 style={{ marginTop: 0 }}>{title}</h3>
-      <p style={{ color: '#555' }}>{desc}</p>
-    </div>
-  );
-}
-
-async function sha256(text: string): Promise<string> {
-  try {
-    const enc = new TextEncoder().encode(text);
-    const hash = await (window.crypto?.subtle?.digest?.('SHA-256', enc) ?? Promise.reject(new Error('no crypto')));
-    return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-  } catch { return ''; }
 }

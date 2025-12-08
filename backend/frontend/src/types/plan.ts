@@ -34,9 +34,12 @@ export interface InputField {
 
 export type InputsSchema = {
   [key: string]: {
-    type: 'string' | 'number' | 'boolean';
+    type: 'string' | 'number' | 'boolean' | 'enum';
     enum?: string[];
     title?: string;
     description?: string;
+    required?: boolean;
+    label?: string;
+    placeholder?: string;
   }
 };

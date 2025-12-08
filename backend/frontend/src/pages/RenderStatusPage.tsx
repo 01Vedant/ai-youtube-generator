@@ -1,28 +1,64 @@
-﻿import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { getRender } from "../lib/api";
+import { useEffect, useRef, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { getRender, type RenderJob as ApiRenderJob } from '@/lib/api';
 
-// minimal types to match backend responses
-type JobStatus = "queued" | "pending" | "processing" | "done" | "error";
 type Artifacts = { video?: string; audio?: string; thumbnail?: string } | null | undefined;
+type RenderJob = { id: string; status: ApiRenderJob['status']; artifacts?: Artifacts; error?: string | null };
 
-type RenderJob = {
-  id: string;
-  status: JobStatus;
-  artifacts?: Artifacts;
-  error?: string | null;
-} | null;
+export function RenderStatusPage(): JSX.Element {
+  const { jobId } = useParams<{ jobId: string }>();
+  const [job, setJob] = useState<RenderJob | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const timer = useRef<number | null>(null);
 
-type GetRenderResponse = {
-  ok: boolean;
-  data?: {
-    id: string;
-    status: JobStatus;
-    artifacts?: Artifacts;
-    error?: string | null;
-  } | null;
-  error?: string;
-};
+  const stopPolling = () => {
+    if (timer.current) {
+      clearInterval(timer.current);
+      timer.current = null;
+    }
+  };
+
+  const poll = async (id: string) => {
+    setLoading(true);
+    try {
+      const res = await getRender(id);
+      setJob({
+        id: res.id,
+        status: res.status,
+        error: res.error ?? null,
+        artifacts: (() => {
+          const acc: Artifacts = {};
+          res.artifacts?.forEach((a) => {
+            if (a.type === 'video') acc.video = a.url;
+            if (a.type === 'audio') acc.audio = a.url;
+            if (a.type === 'image') acc.thumbnail = a.url;
+          });
+          return acc;
+        })(),
+      });
+      setErr(null);
+      if (res.status === 'success' || res.status === 'error') {
+        stopPolling();
+      }
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Unknown error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!jobId) return;
+    void poll(jobId);
+    timer.current = window.setInterval(() => void poll(jobId), 4000);
+    return () => stopPolling();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jobId]);
+
+  const artifacts = job?.artifacts;
+  const isDone = job?.status === 'success';
+  const isError = job?.status === 'error';
 
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-6">
@@ -46,42 +82,35 @@ type GetRenderResponse = {
 
           <div>
             <div className="text-sm text-gray-500">Status</div>
-            <div className="font-medium">{loading ? "loading…" : job?.status ?? "unknown"}</div>
+            <div className="font-medium">{loading ? 'loading...' : job?.status ?? 'unknown'}</div>
           </div>
 
-          {isError && <div className="text-red-600">{job?.error || "Render failed"}</div>}
+          {isError && <div className="text-red-600">{job?.error || 'Render failed'}</div>}
 
           {isDone && (
             <div className="space-y-3">
-              {a?.thumbnail && (
-                <img src={a.thumbnail} alt="thumbnail" className="w-full rounded-lg border" />
+              {artifacts?.thumbnail && (
+                <img src={artifacts.thumbnail} alt="thumbnail" className="w-full rounded-lg border" />
               )}
-              {a?.video && (
-                <video src={a.video} controls className="w-full rounded-lg border" />
+              {artifacts?.video && (
+                <video src={artifacts.video} controls className="w-full rounded-lg border" />
               )}
-              {!a?.video && a?.audio && (
-                <audio src={a.audio} controls className="w-full" />
+              {!artifacts?.video && artifacts?.audio && (
+                <audio src={artifacts.audio} controls className="w-full" />
               )}
             </div>
           )}
 
-          {err && <div className="text-sm text-red-600">{err}</div>}
+          {err && (
+            <div role="alert" aria-live="polite" className="text-red-600 space-y-1">
+              <div className="font-medium">Failed to load render</div>
+              <div className="text-sm opacity-80">{String(err)}</div>
+            </div>
+          )}
         </div>
       )}
     </div>
   );
 }
 
-import React from 'react';
-import { useParams } from 'react-router-dom';
-
-export default function RenderStatusPage() {
-  const { jobId } = useParams();
-  return (
-    <div style={{ padding: 32 }}>
-      <h1>Render Status</h1>
-      <div>Job ID: {jobId}</div>
-    </div>
-  );
-}
-}
+export default RenderStatusPage;

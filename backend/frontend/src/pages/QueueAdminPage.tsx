@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchLibrary, getStatus } from '@/lib/api';
+import type { LibraryItem } from '@/types/library';
 
 type Row = {
   id: string;
@@ -27,13 +28,13 @@ export const QueueAdminPage: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetchLibrary({ page: 1, pageSize, sort: 'created_desc' });
-      const data: Row[] = res.entries.map((e) => ({
+      const res = await fetchLibrary({ page: 1, pageSize, sort: 'created_at:desc' });
+      const data: Row[] = res.entries.map((e: LibraryItem & { project_name?: string | null }) => ({
         id: e.id,
         title: e.title ?? `Job ${e.id}`,
         state: e.state,
         created_at: e.created_at,
-        project: (e as any).project_name ?? null,
+        project: e.project_name ?? null,
       }));
       setRows(data);
     } catch (err) {

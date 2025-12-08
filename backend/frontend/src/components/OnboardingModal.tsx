@@ -12,7 +12,6 @@ export const OnboardingModal: React.FC<Props> = ({ open, onClose }) => {
   const [error, setError] = useState<string | null>(null);
 
   if (!open) return null;
-  // Do not show on public share view
   if (location.pathname.startsWith('/s/')) return null;
 
   const finish = (): void => {
@@ -24,9 +23,9 @@ export const OnboardingModal: React.FC<Props> = ({ open, onClose }) => {
     setError(null);
     try {
       const res = await withStickyToast(() => postRender(demoPlan), {
-        pending: 'Submitting demo render…',
-        success: (r) => `Demo render queued: ${r.job_id}`,
-        error: (e) => e instanceof Error ? e.message : 'Failed to create demo video',
+        pending: 'Submitting demo render...',
+        success: (r: { job_id: string }) => `Demo render queued: ${r.job_id}`,
+        error: (e: unknown) => (e instanceof Error ? e.message : 'Failed to create demo video'),
       });
       finish();
       navigate(`/render/${res.job_id}`);
@@ -35,7 +34,7 @@ export const OnboardingModal: React.FC<Props> = ({ open, onClose }) => {
       if (e && e.code === 'QUOTA_EXCEEDED') {
         const limit = e.payload?.limit_renders;
         const reset = e.payload?.reset_at;
-        setError(`Quota exceeded${limit ? `: ${limit} renders/day` : ''}${reset ? ` — resets ${new Date(reset).toLocaleString()}` : ''}`);
+        setError(`Quota exceeded${limit ? `: ${limit} renders/day` : ''}${reset ? ` - resets ${new Date(reset).toLocaleString()}` : ''}`);
         return;
       }
       setError('Failed to create demo video');
@@ -46,7 +45,7 @@ export const OnboardingModal: React.FC<Props> = ({ open, onClose }) => {
     <div className="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
       <div className="modal">
         <h2 id="welcome-title">Welcome to BhaktiGen</h2>
-        <p className="subtitle">Create devotional videos in minutes — script, voice, visuals — all automated.</p>
+        <p className="subtitle">Create devotional videos in minutes - script, voice, visuals - all automated.</p>
         {error && (
           <div className="alert alert-warning" role="alert" aria-live="polite">
             {error}

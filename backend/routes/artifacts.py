@@ -1,3 +1,3 @@
 from __future__ import annotations
 # Shim to backend router
-from backend.routes.artifacts import router  # type: ignore
+from backend.backend.routes.artifacts import router  # type: ignore

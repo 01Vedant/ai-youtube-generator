@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getProject, unassignFromProject } from '@/lib/api';
 import type { Project } from '@/types/projects';
-import { ArtifactCard } from '@/components/ArtifactCard';
+import ArtifactCard from '@/components/ArtifactCard';
 
 type Entry = { id: string; title: string; created_at: string };
 
@@ -47,7 +47,7 @@ export default function ProjectDetailPage(): JSX.Element {
 
   return (
     <div className="container" style={{ padding: '1rem' }}>
-      <button className="btn btn-secondary" onClick={() => navigate('/projects')}>← Back</button>
+      <button className="btn btn-secondary" onClick={() => navigate('/projects')}>Back</button>
       <h1 style={{ marginTop: 8 }}>{project.title}</h1>
       {project.description && <p style={{ color: '#444' }}>{project.description}</p>}
 

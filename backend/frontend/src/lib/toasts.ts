@@ -1,52 +1,44 @@
-export function showToast(msg: string) {
-  alert(msg);
-}
-import { toast } from '@/lib/toast';
+import { toast } from './toast';
 
-type ToastOpts<T> = {
+export type ToastOpts<T = unknown> = {
   pending?: string;
-  success?: string | ((res: T) => string);
-  error?: string | ((err: unknown) => string);
-  stickyOnError?: boolean; // default true
+  success?: string | ((result: T) => string | void | null | undefined);
+  error?: string | ((err: unknown) => string | void | null | undefined);
+  stickyOnError?: boolean;
 };
 
-export function withToast<T>(p: Promise<T>, pending?: string, success?: string, fail?: string) {
-  // if you have a toast lib that supports loading(), keep it, else fallback:
-  if (pending) console.log(pending);
-  return p.then((res) => {
-    if (success) console.log(success);
-    return res;
-  }).catch((err) => {
-    if (fail) console.error(fail);
-    throw err;
-  });
+export function showToast(message: string, type: 'success' | 'warning' | 'error' | 'info' = 'info'): string {
+  return toast.show(message, type);
 }
-import { toast } from '@/lib/toast';
 
-type ToastOpts<T> = {
-  pending?: string;
-  success?: string | ((res: T) => string);
-  error?: string | ((err: unknown) => string);
-  stickyOnError?: boolean; // default true
-};
-
-export async function withStickyToast<T>(op: () => Promise<T>, opts: ToastOpts<T> = {}): Promise<T> {
+export async function withToast<T>(op: () => Promise<T>, opts: ToastOpts<T> = {}): Promise<T> {
   const { pending, success, error, stickyOnError = true } = opts;
-  const id = pending ? toast.loading(pending) : undefined;
+  const pendingId = pending ? toast.info(pending) : undefined;
+
   try {
     const res = await op();
     const msg = typeof success === 'function' ? success(res) : success;
-    if (id) toast.dismiss(id);
+    if (pendingId) toast.dismiss(pendingId);
     if (msg) toast.success(msg);
     return res;
   } catch (err) {
-    const msg = typeof error === 'function' ? error(err) : (error ?? (err instanceof Error ? err.message : 'Something went wrong'));
-    if (id) toast.dismiss(id);
-    if (stickyOnError) {
-      toast.error(msg, { duration: Infinity });
-    } else {
-      toast.error(msg);
+    const msg = typeof error === 'function'
+      ? error(err)
+      : error ?? (err instanceof Error ? err.message : 'Something went wrong');
+    if (pendingId) toast.dismiss(pendingId);
+    if (msg) {
+      if (stickyOnError) {
+        toast.error(msg, Infinity);
+      } else {
+        toast.error(msg);
+      }
     }
     throw err;
   }
 }
+
+export function withStickyToast<T>(op: () => Promise<T>, opts: ToastOpts<T> = {}): Promise<T> {
+  return withToast(op, { ...opts, stickyOnError: opts.stickyOnError ?? true });
+}
+
+export { toast };

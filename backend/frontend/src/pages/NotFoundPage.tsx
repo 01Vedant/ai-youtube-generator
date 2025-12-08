@@ -1,4 +1,4 @@
-import { PublicShell } from '@/src/components/PublicShell';
+import { PublicShell } from '@/components/PublicShell';
 
 export default function NotFoundPage() {
   return (

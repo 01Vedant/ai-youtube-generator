@@ -18,7 +18,7 @@ requires_stripe = pytest.mark.skipif(not stripe_available, reason="Stripe not co
 @pytest.fixture
 async def client() -> AsyncGenerator:
     """Create test client."""
-    from app.main import app
+    from backend.backend.main import app
     async with AsyncClient(app=app, base_url="http://test") as ac:
         yield ac
 

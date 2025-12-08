@@ -1,1 +1,1 @@
-# Platform package root
+# package init – no path mutations

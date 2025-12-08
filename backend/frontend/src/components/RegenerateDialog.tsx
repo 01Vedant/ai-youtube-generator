@@ -16,7 +16,7 @@ const fieldLabel: Record<keyof NonNullable<RegenerateDialogProps['initial']>, st
   title: 'Title',
   voice: 'Voice',
   template: 'Template',
-  duration_sec: 'Duration (sec)'
+  duration_sec: 'Duration (sec)',
 };
 
 export const RegenerateDialog: React.FC<RegenerateDialogProps> = ({ open, onClose, jobId, initial, onQueued }) => {
@@ -33,11 +33,7 @@ export const RegenerateDialog: React.FC<RegenerateDialogProps> = ({ open, onClos
     setTitle(initial.title ?? '');
     setVoice(initial.voice ?? '');
     setTemplate(initial.template ?? '');
-    setDurationSec(
-      typeof initial.duration_sec === 'number' && isFinite(initial.duration_sec)
-        ? String(initial.duration_sec)
-        : ''
-    );
+    setDurationSec(typeof initial.duration_sec === 'number' && isFinite(initial.duration_sec) ? String(initial.duration_sec) : '');
   }, [open, initial]);
 
   const overrides: RegenerateOverrides = useMemo(() => {
@@ -58,9 +54,9 @@ export const RegenerateDialog: React.FC<RegenerateDialogProps> = ({ open, onClos
     setSubmitting(true);
     try {
       const res = await withStickyToast(() => regenerateJob(jobId, overrides), {
-        pending: 'Queuing new render…',
+        pending: 'Queuing new render...',
         success: () => 'Queued new render',
-        error: (e) => e instanceof Error ? e.message : 'Failed to enqueue',
+        error: (e: unknown) => (e instanceof Error ? e.message : 'Failed to enqueue'),
       });
       if (onQueued) onQueued(res.job_id);
       onClose();
@@ -85,7 +81,7 @@ export const RegenerateDialog: React.FC<RegenerateDialogProps> = ({ open, onClos
       >
         <header className="flex items-center justify-between mb-3">
           <h2 id="regen-dialog-title" className="text-lg font-semibold">Regenerate</h2>
-          <button className="text-gray-500 hover:text-gray-700" aria-label="Close" onClick={onClose}>✕</button>
+          <button className="text-gray-500 hover:text-gray-700" aria-label="Close" onClick={onClose}>×</button>
         </header>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
@@ -108,7 +104,7 @@ export const RegenerateDialog: React.FC<RegenerateDialogProps> = ({ open, onClos
               onChange={(e) => setVoice((e.target.value as 'Swara' | 'Diya' | ''))}
               className="w-full rounded border px-2 py-1 text-sm"
             >
-              <option value="">—</option>
+              <option value="">-</option>
               <option value="Swara">Swara</option>
               <option value="Diya">Diya</option>
             </select>
@@ -149,7 +145,7 @@ export const RegenerateDialog: React.FC<RegenerateDialogProps> = ({ open, onClos
               Cancel
             </button>
             <button type="submit" className="text-sm px-3 py-1 border rounded bg-black text-white" disabled={submitting}>
-              {submitting ? '⏳ Queuing...' : '⚡ Regenerate'}
+              {submitting ? '... Queuing...' : 'Regenerate'}
             </button>
           </footer>
         </form>
@@ -157,3 +153,5 @@ export const RegenerateDialog: React.FC<RegenerateDialogProps> = ({ open, onClos
     </div>
   );
 };
+
+export default RegenerateDialog;

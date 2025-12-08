@@ -1,62 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import ArtifactCard from '@/components/ArtifactCard';
-
-type Artifact = { id: string; title: string; date?: string; thumbnailUrl?: string };
-
-export default function LibraryPage() {
-  const [items, setItems] = useState<Artifact[]>([]);
-  useEffect(() => {
-    fetch('/library?page=1&page_size=24')
-      .then((r) => r.json())
-      .then((data) => setItems(data.items || []));
-  }, []);
-  return (
-    <div style={{ maxWidth: 920, margin: '0 auto', padding: 16 }}>
-      <h1 style={{ marginBottom: 16 }}>Library</h1>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: 12 }}>
-        {items.map((x) => (
-          <ArtifactCard key={x.id} id={x.id} title={x.title} date={x.date} thumbnailUrl={x.thumbnailUrl} />
-        ))}
-      </div>
-    </div>
-  );
-}
-/**
- * LibraryPage: Browse past video projects, duplicate for reuse
- */
-
-import React, { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import type { LibraryItem } from '../types/library';
-import { track } from '../lib/analytics';
-import { fetchLibrary, listProjects, getProject } from '../lib/api';
-import { toast } from '../lib/toast';
+import ArtifactCard from '@/components/ArtifactCard';
+import type { LibraryItem } from '@/types/library';
+import { createShare, fetchLibrary, getProject, listProjects } from '@/lib/api';
+import { track } from '@/lib/analytics';
+import { toast } from '@/lib/toast';
+import { showToast } from '@/lib/toasts';
 import './LibraryPage.css';
-import { ArtifactCard } from '../components/ArtifactCard';
-import { postRender } from '@/lib/api';
-import { demoPlan } from '@/lib/demoPlan';
-import { createShare } from "../lib/api";
-import { showToast } from "../lib/toasts";
-const SHARES_ENABLED = (import.meta.env.VITE_PUBLIC_SHARES_ENABLED ?? "true") !== "false";
 
-function OEmbedCheck({ url }: { url: string }) {
-  const [data, setData] = useState<any>(null);
-  const [open, setOpen] = useState(false);
-  useEffect(() => {
-    if (import.meta.env.DEV && url) {
-      fetch(`/oembed?url=${encodeURIComponent(url)}`).then(r => r.json()).then(setData);
-    }
-  }, [url]);
-  if (!import.meta.env.DEV || !url) return null;
-  return (
-    <div style={{ marginTop: 8 }}>
-      <button onClick={() => setOpen(o => !o)}>{open ? "Hide" : "Show"} oEmbed</button>
-      {open && <pre style={{ maxHeight: 200, overflow: "auto", background: "#f6f8fa", padding: 8 }}>{JSON.stringify(data, null, 2)}</pre>}
-    </div>
-  );
-}
+const SHARES_ENABLED = (import.meta.env.VITE_PUBLIC_SHARES_ENABLED ?? 'true') !== 'false';
 
-export const LibraryPage: React.FC = () => {
+type SortType = 'created_at:desc' | 'created_at:asc';
+
+export function LibraryPage(): JSX.Element {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [entries, setEntries] = useState<LibraryItem[]>([]);
@@ -68,15 +24,7 @@ export const LibraryPage: React.FC = () => {
   const [query, setQuery] = useState<string>('');
   const [projectId, setProjectId] = useState<string>('');
   const [projects, setProjects] = useState<Array<{ id: string; title: string }>>([]);
-  type SortType = 'created_at:desc' | 'created_at:asc';
   const [sort, setSort] = useState<SortType>('created_at:desc');
-    // duplicate action handled elsewhere; no local duplicating state needed
-  
-// ...existing code...
-
-// ...existing code...
-
-export default LibraryPage;
 
   const loadLibrary = useCallback(
     async (pageNum: number, nextQuery?: string, nextSort?: SortType, nextPageSize?: number, nextProjectId?: string): Promise<void> => {
@@ -87,7 +35,7 @@ export default LibraryPage;
         if (activeProject) {
           const detail = await getProject(activeProject);
           setEntries(
-            detail.entries.map(e => ({
+            detail.entries.map((e) => ({
               id: e.id,
               title: e.title,
               created_at: e.created_at,
@@ -95,6 +43,7 @@ export default LibraryPage;
               voice: 'Swara',
               template: 'default',
               thumbnail_url: `/artifacts/${e.id}/thumb.png`,
+              video_url: undefined,
             }))
           );
           setTotal(detail.total);
@@ -109,7 +58,7 @@ export default LibraryPage;
           setTotal(response.total);
         }
         setPage(pageNum);
-        track('library_opened', { page: pageNum, total: total, query: nextQuery ?? query, sort: nextSort ?? sort, projectId: activeProject });
+        track('library_opened', { page: pageNum, total, query: nextQuery ?? query, sort: nextSort ?? sort, projectId: activeProject });
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Failed to load library';
         setError(message);
@@ -122,7 +71,6 @@ export default LibraryPage;
     [pageSize, query, sort, projectId, total]
   );
 
-  // Initialize state from URL on mount
   useEffect(() => {
     const urlPage = parseInt(searchParams.get('page') || '1', 10);
     const urlPageSize = parseInt(searchParams.get('pageSize') || '20', 10);
@@ -141,17 +89,14 @@ export default LibraryPage;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Debounce query input
   useEffect(() => {
     const handle = setTimeout(() => {
-      // Reset to first page when query changes
       setPage(1);
       void loadLibrary(1);
     }, 300);
     return () => clearTimeout(handle);
   }, [query, loadLibrary]);
 
-  // Sync state to URL on changes
   useEffect(() => {
     const params = new URLSearchParams();
     params.set('page', String(page));
@@ -161,27 +106,37 @@ export default LibraryPage;
     if (projectId) params.set('projectId', projectId);
     setSearchParams(params, { replace: true });
   }, [page, pageSize, query, sort, projectId, setSearchParams]);
-  // Load projects for filter dropdown
+
   useEffect(() => {
     (async () => {
       try {
         const ps = await listProjects();
-        setProjects(ps.map(p => ({ id: p.id, title: p.title })));
+        setProjects(ps.map((p) => ({ id: p.id, title: p.title })));
       } catch {
         setProjects([]);
       }
     })();
   }, []);
 
-  // duplicate action removed in card view
-
   const handleViewStatus = (entry: LibraryItem): void => {
-    navigate(`/render/${entry.id}`, { 
-      state: { 
-        from: 'library' 
-      } 
+    navigate(`/render/${entry.id}`, {
+      state: {
+        from: 'library',
+      },
     });
     track('library_opened', { job_id: entry.id });
+  };
+
+  const handleShare = async (jobId: string) => {
+    if (!SHARES_ENABLED) return;
+    try {
+      const res = await createShare(jobId);
+      showToast('Share link ready', 'success');
+      await navigator.clipboard.writeText(res.url);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to create share';
+      showToast(message, 'error');
+    }
   };
 
   return (
@@ -215,7 +170,7 @@ export default LibraryPage;
               id="sort-filter"
               value={sort}
               onChange={(e) => {
-                const next = (e.target.value as SortType);
+                const next = e.target.value as SortType;
                 setSort(next);
                 setPage(1);
                 void loadLibrary(1, undefined, next);
@@ -240,8 +195,10 @@ export default LibraryPage;
               aria-label="Filter by project"
             >
               <option value="">(All)</option>
-              {projects.map(p => (
-                <option key={p.id} value={p.id}>{p.title}</option>
+              {projects.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.title}
+                </option>
               ))}
             </select>
           </div>
@@ -254,9 +211,9 @@ export default LibraryPage;
           </div>
         ) : entries.length === 0 ? (
           <div className="library-empty">
-            <div className="empty-icon">📦</div>
+            <div className="empty-icon">[library]</div>
             <h2>Export your first video</h2>
-            <p>You’ll see exported videos here once a render completes.</p>
+            <p>You'll see exported videos here once a render completes.</p>
             <div className="empty-actions">
               <button
                 className="btn btn-secondary"
@@ -273,30 +230,26 @@ export default LibraryPage;
               {entries.map((entry) => {
                 const label = entry.title ?? `Job ${entry.id.slice(0, 8)}`;
                 return (
-                  <ArtifactCard
-                    key={entry.id}
-                    id={entry.id}
-                    title={label}
-                    thumbnailUrl={entry.thumbnail_url || `/artifacts/${entry.id}/thumb.png`}
-                    videoUrl={entry.video_url || undefined}
-                    createdAt={entry.created_at}
-                    durationSec={entry.duration_sec || undefined}
-                    voice={entry.voice as ('Swara' | 'Diya') | undefined}
-                    template={entry.template}
-                    onClick={() => handleViewStatus(entry)}
-                  />
+                  <div key={entry.id} style={{ display: 'grid', gap: 8 }}>
+                    <ArtifactCard
+                      id={entry.id}
+                      title={label}
+                      thumbnailUrl={entry.thumbnail_url || `/artifacts/${entry.id}/thumb.png`}
+                      videoUrl={entry.video_url || undefined}
+                      createdAt={entry.created_at}
+                      durationSec={entry.duration_sec || undefined}
+                      voice={entry.voice as 'Swara' | 'Diya' | undefined}
+                      template={entry.template}
+                      onClick={() => handleViewStatus(entry)}
+                    />
+                    {SHARES_ENABLED && (
+                      <button className="btn btn-secondary" onClick={() => void handleShare(entry.id)}>
+                        Share
+                      </button>
+                    )}
+                  </div>
                 );
               })}
-                        {SHARES_ENABLED && artifact.url && (
-                          <button onClick={async () => {
-                            const res = await createShare(artifact.url, { title: artifact.title, description: artifact.description });
-                            showToast("Share link ready", {
-                              action: { label: "Copy", onClick: () => navigator.clipboard.writeText(res.share_url) },
-                              secondary: { label: "Open", href: res.share_url }
-                            });
-                          }}>Share</button>
-                        )}
-                        {import.meta.env.DEV && artifact.url && <OEmbedCheck url={artifact.url} />}
             </div>
 
             <div className="library-pagination">
@@ -306,7 +259,7 @@ export default LibraryPage;
                 disabled={page === 1}
                 aria-label="Previous page"
               >
-                ← Previous
+                Previous
               </button>
 
               <span className="pagination-info">
@@ -319,7 +272,7 @@ export default LibraryPage;
                 disabled={page >= Math.ceil(total / pageSize)}
                 aria-label="Next page"
               >
-                Next →
+                Next
               </button>
             </div>
           </>
@@ -327,4 +280,6 @@ export default LibraryPage;
       </div>
     </div>
   );
-};
+}
+
+export default LibraryPage;

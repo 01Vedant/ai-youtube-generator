@@ -1,12 +1,3 @@
-export async function createShare(jobId: string): Promise<{ share_id: string; url: string }> {
-  const res = await fetch('/shares', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ job_id: jobId })
-  });
-  if (!res.ok) throw new Error('Failed to create share');
-  return res.json();
-}
 export interface RenderJob {
   id: string;
   status: "queued" | "running" | "success" | "error";
@@ -225,6 +216,7 @@ export type TemplateItem = {
   plan_json: unknown;
   visibility: string;
   user_id: string;
+  inputs_schema?: InputsSchema;
 };
 
 export async function getBuiltinTemplates(): Promise<{ templates: TemplateItem[] }> {
@@ -270,7 +262,13 @@ export async function renderFromTemplate(
 
 // Onboarding (no-op safe)
 export type OnboardingSteps = { created_project?: boolean; rendered_video?: boolean; exported_video?: boolean };
-export type OnboardingState = { seen_welcome?: boolean; steps?: OnboardingSteps; recommended_template_id?: string | number | null };
+export type OnboardingState = {
+  seen_welcome?: boolean;
+  steps?: OnboardingSteps;
+  recommended_template_id?: string | number | null;
+  has_render?: boolean;
+  seed_job_id?: string | null;
+};
 
 export async function getOnboardingState(): Promise<OnboardingState> {
   try {

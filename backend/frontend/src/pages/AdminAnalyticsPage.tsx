@@ -1,14 +1,8 @@
-export default function AdminAnalyticsPage() {
-  return <div style={{ padding: 24 }}>Admin Analytics is not configured in this build.</div>;
-}
-export default function AdminAnalyticsPage() {
-  return <div style={{ padding: 24 }}>Admin Analytics is not configured in this build.</div>;
-}
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/state/auth';
 import { getAnalyticsSummary, getAnalyticsDaily, type AnalyticsSummary, type AnalyticsDaily } from '@/lib/api';
 
-const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || '').split(',').map(s => s.trim()).filter(Boolean);
+const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || '').split(',').map((s: string) => s.trim()).filter(Boolean);
 
 type KPI = {
   label: string;

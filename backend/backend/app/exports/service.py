@@ -4,7 +4,7 @@ from typing import Dict, Any
 import json
 
 from .provider import YouTubeProvider, ExportResult
-from app.main import OUTPUT_ROOT  # artifacts root
+from backend.backend.app.settings import OUTPUT_ROOT  # artifacts root
 from app.artifacts_storage.factory import get_storage
 import logging
 

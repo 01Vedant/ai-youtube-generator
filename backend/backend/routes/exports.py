@@ -5,7 +5,7 @@ import json
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 
-from app.main import OUTPUT_ROOT
+from backend.backend.app.settings import OUTPUT_ROOT
 from app.exports.service import create_export
 from app.auth.security import get_current_user
 from app.db import get_conn

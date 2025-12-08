@@ -1,6 +1,4 @@
-
 import { useNavigate } from 'react-router-dom';
-import React from 'react';
 import { type UsageToday } from '@/lib/api';
 import { useUsage } from '@/hooks/useUsage';
 
@@ -19,9 +17,11 @@ type Props = {
 
 export const UsageBadge: React.FC<Props> = ({ data, loading, error, onRetry }) => {
   const hook = useUsage();
-  const used = data ?? hook.data;
-  const busy = loading ?? hook.loading; 
   const navigate = useNavigate();
+
+  const used = data ?? hook.data;
+  const busy = loading ?? hook.loading;
+  const err = error ?? hook.error;
 
   // Hide entirely if unauthenticated (no data and no error)
   if (!busy && !used && !err) return null;
@@ -44,15 +44,38 @@ export const UsageBadge: React.FC<Props> = ({ data, loading, error, onRetry }) =
     whiteSpace: 'nowrap',
   };
 
+  if (busy) {
+    return (
+      <div style={neutralPill} aria-live="polite" title="Checking usage">
+        Loading...
+      </div>
+    );
+  }
+
+  if (err) {
+    return (
+      <button
+        type="button"
+        style={neutralPill}
+        onClick={onRetry ?? hook.refetch}
+        aria-label="Retry fetching usage"
+      >
+        Usage unavailable - retry
+      </button>
+    );
+  }
+
+  if (!used) return null;
+
   return (
     <button
       type="button"
-      className="usage-badge"
-      title="See history"
+      style={neutralPill}
+      title={title}
       onClick={() => navigate('/usage')}
       aria-label="Open usage history"
     >
-      📊 Usage
+      Usage: {formatMMSS(used.tts_sec)} TTS · {used.renders}/{used.limit_renders} renders
     </button>
   );
 };

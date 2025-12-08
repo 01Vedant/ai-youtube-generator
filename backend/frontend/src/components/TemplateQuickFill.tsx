@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { InputsSchema } from '@/types/plan';
 
+type ExtendedField = InputsSchema[string];
+
 type Props = {
   vars: string[];
   schema?: InputsSchema;
@@ -13,17 +15,17 @@ export function TemplateQuickFill({ vars, schema, onPreview, onRender, initial }
   const [inputs, setInputs] = useState<Record<string, unknown>>(initial || {});
   const [warnings, setWarnings] = useState<string[]>([]);
   const orderedVars = useMemo(() => {
-    const withSchema = vars.filter(v => schema && schema[v]);
-    const withoutSchema = vars.filter(v => !schema || !schema[v]);
+    const withSchema = vars.filter((v) => schema && schema[v]);
+    const withoutSchema = vars.filter((v) => !schema || !schema[v]);
     return [...withSchema, ...withoutSchema];
   }, [vars, schema]);
 
   useEffect(() => {
     if (!initial) return;
-    setInputs(i => ({ ...initial, ...i }));
+    setInputs((i) => ({ ...initial, ...i }));
   }, [initial]);
 
-  const change = (key: string, value: unknown) => setInputs(prev => ({ ...prev, [key]: value }));
+  const change = (key: string, value: unknown) => setInputs((prev) => ({ ...prev, [key]: value }));
 
   const handlePreview = async () => {
     const res = await onPreview(inputs);
@@ -39,10 +41,10 @@ export function TemplateQuickFill({ vars, schema, onPreview, onRender, initial }
     <div>
       <div style={{ display: 'grid', gap: 12, marginTop: 8 }}>
         {orderedVars.map((v) => {
-          const f = schema?.[v];
-          const required = f?.required;
-          const label = f?.label || v;
-          const placeholder = f?.placeholder || '';
+          const f = schema?.[v] as ExtendedField | undefined;
+          const required = f?.required ?? false;
+          const label = f?.label || f?.title || v;
+          const placeholder = f?.placeholder || f?.description || '';
           if (f?.type === 'number') {
             return (
               <label key={v} style={{ display: 'grid', gap: 4 }}>
@@ -51,13 +53,13 @@ export function TemplateQuickFill({ vars, schema, onPreview, onRender, initial }
               </label>
             );
           }
-          if (f?.type === 'enum' && Array.isArray(f.enum)) {
+          if (f?.type === 'enum' && Array.isArray(f?.enum)) {
             return (
               <label key={v} style={{ display: 'grid', gap: 4 }}>
                 <span style={{ fontSize: 12, color: '#6b7280' }}>{label}{required ? ' *' : ''}</span>
                 <select value={(inputs[v] as string | undefined) ?? ''} onChange={(e) => change(v, e.target.value)}>
-                  <option value="" disabled>Select…</option>
-                  {f.enum.map(opt => (<option key={opt} value={opt}>{opt}</option>))}
+                  <option value="" disabled>Select</option>
+                  {f.enum.map((opt) => (<option key={opt} value={opt}>{opt}</option>))}
                 </select>
               </label>
             );
