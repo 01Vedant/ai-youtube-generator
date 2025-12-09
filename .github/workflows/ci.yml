@@ -33,7 +33,7 @@ jobs:
         working-directory: backend/frontend
         run: |
           npm ci
-          npm run typecheck
+          node node_modules/typescript/bin/tsc --noEmit -p tsconfig.app.json
 
       - name: Start backend + frontend
         run: |
@@ -51,6 +51,14 @@ jobs:
         working-directory: backend/frontend
         run: npm run e2e
 
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs
+          path: |
+            backend/artifacts/dev-frontend.log
+            backend/artifacts/dev-backend.log
       - name: Upload E2E artifacts
         uses: actions/upload-artifact@v4
         with:

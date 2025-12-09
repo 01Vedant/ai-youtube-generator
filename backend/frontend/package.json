@@ -6,6 +6,7 @@
     "scripts": {
         "dev": "vite",
         "typecheck": "C:\\Users\\vedant.sharma\\Documents\\node-v24.11.1-win-x64\\node.exe node_modules/typescript/bin/tsc --noEmit -p tsconfig.app.json",
+        "typecheck:ci": "node node_modules/typescript/bin/tsc --noEmit -p tsconfig.app.json",
         "test": "vitest run",
         "test:watch": "vitest",
         "e2e": "C:\\Users\\vedant.sharma\\Documents\\node-v24.11.1-win-x64\\node.exe node_modules/@playwright/test/cli.js test",
