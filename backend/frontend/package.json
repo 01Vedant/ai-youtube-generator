@@ -10,6 +10,7 @@
         "test": "vitest run",
         "test:watch": "vitest",
         "e2e": "C:\\Users\\vedant.sharma\\Documents\\node-v24.11.1-win-x64\\node.exe node_modules/@playwright/test/cli.js test",
+        "e2e:ci": "node node_modules/@playwright/test/cli.js test",
         "e2e:smoke": "C:\\Users\\vedant.sharma\\Documents\\node-v24.11.1-win-x64\\node.exe node_modules/@playwright/test/cli.js test e2e/smoke.spec.ts",
         "e2e:flag": "C:\\Users\\vedant.sharma\\Documents\\node-v24.11.1-win-x64\\node.exe node_modules/@playwright/test/cli.js test -g \"marketplace flag gating\"",
         "e2e:headed": "playwright test --headed",

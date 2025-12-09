@@ -47,9 +47,9 @@ jobs:
         working-directory: backend/frontend
         run: npx playwright install --with-deps
 
-      - name: E2E
+      - name: Run E2E (cross-platform)
         working-directory: backend/frontend
-        run: npm run e2e
+        run: node node_modules/@playwright/test/cli.js test
 
       - name: Upload logs
         if: always()
