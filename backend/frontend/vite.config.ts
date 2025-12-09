@@ -10,13 +10,17 @@ export default defineConfig({
     },
   },
   server: {
+    watch: {
+      ignored: [
+        "**/artifacts/**",
+        "**/playwright-report/**",
+        "**/test-results/**"
+      ],
+    },
     port: 5173,
     strictPort: true,
     fs: {
       deny: ["artifacts"],       // don't serve artifacts
-    },
-    watch: {
-      ignored: ["**/artifacts/**"], // don't watch artifacts
     },
   },
 });

@@ -79,7 +79,7 @@ export default function LandingPage(): JSX.Element {
       <div style={{ padding: 24 }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
           <button
-            data-testid="create-story"
+            data-testid="create-story-top"
             style={{ padding: '10px 18px', fontSize: 16 }}
             onClick={() => {
               setCreateOpen(true);
@@ -106,7 +106,7 @@ export default function LandingPage(): JSX.Element {
           )}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'center' }}>
             <button
-              data-testid="create-story"
+              data-testid="create-story-mid"
               style={{ padding: '12px 24px', fontSize: 18 }}
               onClick={() => {
                 setCreateOpen(true);

@@ -100,7 +100,7 @@ export default function CreateStoryModal({ open = true, onClose = () => {}, onSu
           <div className="flex items-center gap-3">
             <button
               type="submit"
-              data-testid="submit-create"
+              data-testid="create-story-submit"
               disabled={loading}
               className="px-4 py-2 bg-amber-500 text-black rounded font-medium"
             >
