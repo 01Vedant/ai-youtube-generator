@@ -12,6 +12,7 @@
         "e2e:smoke": "playwright test e2e/smoke.spec.ts",
         "e2e:flag": "playwright test -g \"marketplace flag gating\"",
         "e2e:headed": "playwright test --headed",
+        "ship:e2e": "powershell -ExecutionPolicy Bypass -File ..\\..\\ops\\run-e2e.ps1",
         "build": "vite build",
         "preview": "vite preview",
         "verify": "npm run typecheck"
