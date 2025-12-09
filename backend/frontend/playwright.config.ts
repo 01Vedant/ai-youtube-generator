@@ -1,4 +1,13 @@
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig, devices } from '@playwright/test';
+import path from 'path';
+
+const isWin = process.platform === 'win32';
+const feDir = __dirname; // backend/frontend
+const repoRoot = path.resolve(feDir, '..', '..');
+const nodeCmd = isWin
+  ? 'C\\Users\\vedant.sharma\\Documents\\node-v24.11.1-win-x64\\node.exe'
+  : 'node';
+const viteCmd = `${nodeCmd} node_modules/vite/bin/vite.js --host 127.0.0.1 --port 5173 --strictPort`;
 
 export default defineConfig({
   testDir: "./e2e",
@@ -17,16 +26,16 @@ export default defineConfig({
       stdout: "pipe",
       stderr: "pipe",
       env: { SIMULATE_RENDER: "1" },
-      cwd: "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator",
+      cwd: repoRoot,
     },
     {
-      command: "C:\\Users\\vedant.sharma\\Documents\\node-v24.11.1-win-x64\\node.exe node_modules/vite/bin/vite.js --host 127.0.0.1 --port 5173 --strictPort",
+      command: viteCmd,
       url: "http://127.0.0.1:5173",
       reuseExistingServer: true,
       timeout: 120_000,
       stdout: "pipe",
       stderr: "pipe",
-      cwd: "C:\\Users\\vedant.sharma\\Documents\\ai-youtube-generator\\backend\\frontend",
+      cwd: feDir,
     },
   ],
   use: {
