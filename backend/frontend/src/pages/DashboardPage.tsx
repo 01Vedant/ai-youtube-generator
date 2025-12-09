@@ -293,7 +293,11 @@ export default function DashboardPage(): JSX.Element {
                 >
                   Create demo video
                 </button>
-                <button className="btn-secondary" data-testid="create-story-cta" onClick={() => navigate('/create')}>
+                <button
+                  className="btn-secondary"
+                  data-testid="create-story"
+                  onClick={() => navigate('/create')}
+                >
                   Open Create Video
                 </button>
               </div>

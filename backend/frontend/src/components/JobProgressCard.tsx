@@ -10,11 +10,12 @@ declare global {
 interface JobProgressCardProps {
   jobId: string;
   onRetry?: () => void;
+  showHeader?: boolean;
 }
 
 const POLL_INTERVAL = 1500;
 
-export const JobProgressCard: React.FC<JobProgressCardProps> = ({ jobId, onRetry }: JobProgressCardProps) => {
+export const JobProgressCard: React.FC<JobProgressCardProps> = ({ jobId, onRetry, showHeader = true }: JobProgressCardProps) => {
   const [job, setJob] = useState<RenderJob | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -62,7 +63,7 @@ export const JobProgressCard: React.FC<JobProgressCardProps> = ({ jobId, onRetry
 
   return (
     <div className="job-progress-card" data-testid="job-progress-card">
-      <h3>Render Status: {job.status}</h3>
+      {showHeader && <h3>Render Status: {job.status}</h3>}
       {job.status === 'queued' && <p>Queued...</p>}
       {job.status === 'running' && <p>Rendering... <span className="spinner" /></p>}
       {job.status === 'success' && (
@@ -108,3 +109,5 @@ export const JobProgressCard: React.FC<JobProgressCardProps> = ({ jobId, onRetry
     </div>
   );
 };
+
+export default JobProgressCard;

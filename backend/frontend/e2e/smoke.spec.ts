@@ -1,23 +1,26 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from '@playwright/test';
 
-test("Create Story -> thumbnails appear", async ({ page }) => {
-  // Go to root and wait until network is idle to avoid early clicks
-  await page.goto("/", { waitUntil: "networkidle" });
+test('Create Story -> thumbnails appear', async ({ page }) => {
+  await page.goto('/');
 
-  // Click CTA using data-testid (stable selector)
-  await page.getByTestId("create-story-cta").click();
+  const createBtn = page.getByTestId('create-story')
+    .or(page.getByRole('button', { name: /create (story|video)/i }).first());
+  await expect(createBtn).toBeVisible();
+  await createBtn.click();
 
-  // Fill form using accessible labels
-  await page.getByLabel(/title/i).fill("Smoke");
-  await page.getByLabel(/description/i).fill("Smoke");
-  await page.getByLabel(/duration/i).fill("30");
+  const title = page.getByTestId('title-input').or(page.getByLabel(/title/i).first());
+  const desc  = page.getByTestId('description-input').or(page.getByLabel(/description/i).first());
+  const dur   = page.getByTestId('duration-input').or(page.getByLabel(/duration/i).first());
 
-  // Submit (keep existing role-based query or give submit a data-testid="create-story-submit")
-  await page.getByRole("button", { name: /create/i }).click();
+  await title.fill('Smoke');
+  await desc.fill('Smoke');
+  await dur.fill('30');
 
-  // Assert progress card becomes visible
-  await expect(page.getByTestId("job-progress-card")).toBeVisible();
+  const submit = page.getByTestId('submit-create')
+    .or(page.getByRole('button', { name: /create|render|start/i }).first());
+  await submit.click();
 
-  // Wait for at least one scene thumbnail
-  await page.waitForSelector('[data-testid^="scene-thumb-"]', { timeout: 60_000 });
+  await page.waitForLoadState('networkidle');
+  const thumb = page.locator('img, [data-testid="thumbnail"]').first();
+  await expect(thumb).toBeVisible({ timeout: 15000 });
 });

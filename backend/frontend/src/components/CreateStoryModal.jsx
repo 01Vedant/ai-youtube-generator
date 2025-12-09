@@ -43,6 +43,7 @@ export default function CreateStoryModal({ open = true, onClose = () => {}, onSu
             <label className="block text-sm font-medium" htmlFor="create-story-title">Title</label>
             <input
               id="create-story-title"
+              data-testid="title-input"
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -57,6 +58,7 @@ export default function CreateStoryModal({ open = true, onClose = () => {}, onSu
             <label className="block text-sm font-medium" htmlFor="create-story-description">Short Description (optional)</label>
             <input
               id="create-story-description"
+              data-testid="description-input"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="One-line summary"
@@ -69,6 +71,7 @@ export default function CreateStoryModal({ open = true, onClose = () => {}, onSu
             <label className="block text-sm font-medium" htmlFor="create-story-duration">Duration (seconds)</label>
             <input
               id="create-story-duration"
+              data-testid="duration-input"
               value={duration}
               onChange={(e) => setDuration(e.target.value)}
               placeholder="30"
@@ -96,7 +99,7 @@ export default function CreateStoryModal({ open = true, onClose = () => {}, onSu
           <div className="flex items-center gap-3">
             <button
               type="submit"
-              data-testid="create-story-submit"
+              data-testid="submit-create"
               disabled={loading}
               className="px-4 py-2 bg-amber-500 text-black rounded font-medium"
             >

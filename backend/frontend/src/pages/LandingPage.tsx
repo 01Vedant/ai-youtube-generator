@@ -85,7 +85,7 @@ export default function LandingPage(): JSX.Element {
           )}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'center' }}>
             <button
-              data-testid="create-story-cta"
+              data-testid="create-story"
               style={{ padding: '12px 24px', fontSize: 18 }}
               onClick={() => {
                 setCreateOpen(true);
