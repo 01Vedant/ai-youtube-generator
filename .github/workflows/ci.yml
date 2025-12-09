@@ -1,0 +1,40 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Python backend is needed because Playwright webServer starts uvicorn
+      - name: Use Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install backend deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+
+      # Frontend setup
+      - name: Use Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: backend/frontend/package-lock.json
+
+      - name: Install frontend deps
+        working-directory: backend/frontend
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: backend/frontend
+        run: npx playwright install --with-deps
+
+      # Playwright uses webServer from your playwright.config.ts
+      - name: Run Playwright tests
+        working-directory: backend/frontend
+        run: node node_modules/@playwright/test/cli.js test
