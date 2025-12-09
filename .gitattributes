@@ -1,0 +1,13 @@
+# Force LF endings for workflows to prevent corruption on Windows
+*.yml  text eol=lf
+*.yaml text eol=lf
+
+# Frontend files
+*.ts   text eol=lf
+*.tsx  text eol=lf
+*.js   text eol=lf
+*.jsx  text eol=lf
+*.css  text eol=lf
+
+# Documentation
+*.md   text eol=lf
