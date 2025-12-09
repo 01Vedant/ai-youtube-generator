@@ -29,7 +29,7 @@ export default function CreateStoryModal({ open = true, onClose = () => {}, onSu
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center" role="dialog" aria-modal="true">
+    <div className="fixed inset-0 z-40 flex items-center justify-center" role="dialog" aria-modal="true" data-testid="create-story-modal">
       <div className="absolute inset-0 bg-black opacity-60" onClick={onClose} />
 
       <div className="relative w-full max-w-2xl mx-4 bg-gradient-to-br from-white/5 to-white/2 border border-white/10 rounded-lg p-6 shadow-lg">
@@ -85,6 +85,7 @@ export default function CreateStoryModal({ open = true, onClose = () => {}, onSu
             <label className="block text-sm font-medium" htmlFor="create-story-full-text">Full Story Text (optional)</label>
             <textarea
               id="create-story-full-text"
+              data-testid="fulltext-input"
               value={fullText}
               onChange={(e) => setFullText(e.target.value)}
               rows={5}

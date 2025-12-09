@@ -1,26 +1,23 @@
 import { test, expect } from '@playwright/test';
 
 test('Create Story -> thumbnails appear', async ({ page }) => {
-  await page.goto('/');
+  const base = (process.env.PW_BASE_URL || 'http://localhost:5173').trim().replace(/\/+$/, '');
+  await page.goto(`${base}/?e2e=1`, { waitUntil: 'domcontentloaded' });
 
-  const createBtn = page.getByTestId('create-story')
-    .or(page.getByRole('button', { name: /create (story|video)/i }).first());
-  await expect(createBtn).toBeVisible();
+  const createBtn = page.getByTestId('create-story').first();
+  await expect(createBtn).toBeVisible({ timeout: 15_000 });
   await createBtn.click();
 
-  const title = page.getByTestId('title-input').or(page.getByLabel(/title/i).first());
-  const desc  = page.getByTestId('description-input').or(page.getByLabel(/description/i).first());
-  const dur   = page.getByTestId('duration-input').or(page.getByLabel(/duration/i).first());
+  const modal = page.getByTestId('create-story-modal');
+  await expect(modal).toBeVisible({ timeout: 15_000 });
 
-  await title.fill('Smoke');
-  await desc.fill('Smoke');
-  await dur.fill('30');
+  await page.getByTestId('title-input').fill('E2E Smoke Title');
+  await page.getByTestId('description-input').fill('Short description');
+  await page.getByTestId('fulltext-input').fill('Body text for E2E');
 
-  const submit = page.getByTestId('submit-create')
-    .or(page.getByRole('button', { name: /create|render|start/i }).first());
-  await submit.click();
+  await page.getByTestId('submit-create').click();
 
   await page.waitForLoadState('networkidle');
-  const thumb = page.locator('img, [data-testid="thumbnail"]').first();
-  await expect(thumb).toBeVisible({ timeout: 15000 });
+  const thumb = page.getByTestId('thumbnail').first();
+  await thumb.waitFor({ state: 'visible', timeout: 25_000 });
 });

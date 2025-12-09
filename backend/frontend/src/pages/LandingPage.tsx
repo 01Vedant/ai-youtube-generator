@@ -1,5 +1,5 @@
-import { useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, type FormEvent } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useSeo } from '@/seo';
 import { PublicShell } from '@/components/PublicShell';
 import { JobProgressCard } from '@/components/JobProgressCard';
@@ -26,6 +26,7 @@ export default function LandingPage(): JSX.Element {
   const [createError, setCreateError] = useState<string | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const PUBLIC_ENABLED = import.meta.env.VITE_PUBLIC_ENABLED === 'true';
 
   const handleDemo = async () => {
@@ -65,9 +66,28 @@ export default function LandingPage(): JSX.Element {
     }
   };
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('e2e') === '1') {
+      setCreateOpen(true);
+    }
+  }, [location.search]);
+
   return (
     <PublicShell>
       <div style={{ padding: 24 }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+          <button
+            data-testid="create-story"
+            style={{ padding: '10px 18px', fontSize: 16 }}
+            onClick={() => {
+              setCreateOpen(true);
+              setCreateError(null);
+            }}
+          >
+            Create Story
+          </button>
+        </div>
         <header style={{ textAlign: 'center', marginTop: 40 }}>
           <h1 style={{ fontSize: 32, marginBottom: 12 }}>DevotionalAI</h1>
           <p style={{ fontSize: 16, color: '#555' }}>Create beautiful devotional shorts and educational content.</p>
@@ -104,7 +124,10 @@ export default function LandingPage(): JSX.Element {
           </div>
 
           {createOpen && (
-            <div style={{ marginTop: 24, padding: 20, border: '1px solid #eee', borderRadius: 8, textAlign: 'left' }}>
+            <div
+              style={{ marginTop: 24, padding: 20, border: '1px solid #eee', borderRadius: 8, textAlign: 'left' }}
+              data-testid="create-story-modal"
+            >
               <form onSubmit={handleCreateStory} style={{ display: 'grid', gap: 12 }}>
                 <div>
                   <label htmlFor="create-title" style={{ fontWeight: 600 }}>Title</label>

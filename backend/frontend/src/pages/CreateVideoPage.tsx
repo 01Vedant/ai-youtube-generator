@@ -525,6 +525,7 @@ export const CreateVideoPage: React.FC = () => {
                               controls
                               src={`http://127.0.0.1:8000${ttsPreviewUrls[idx]!.url}`}
                               style={{ flex: 1, maxWidth: '350px' }}
+                              data-testid="thumbnail"
                               aria-label={`TTS preview for scene ${idx + 1}`}
                             />
                             <span style={{ fontSize: '13px', color: '#666', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>

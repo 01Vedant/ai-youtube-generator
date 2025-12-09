@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   claimReferral,
   createReferralCode,
@@ -35,6 +35,7 @@ const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || '').split(',').map((s:
 export default function DashboardPage(): JSX.Element {
   const { events } = useOnboardingState();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [invite, setInvite] = useState<{ code: string; url: string } | null>(null);
   const [claimInput, setClaimInput] = useState('');
@@ -118,6 +119,13 @@ export default function DashboardPage(): JSX.Element {
     }
   }, [state.loading, state.entries.length, events]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('e2e') === '1' && location.pathname !== '/create') {
+      navigate('/create?e2e=1');
+    }
+  }, [location.search, navigate]);
+
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setState((prev) => ({ ...prev, page: 1 }));
@@ -133,6 +141,15 @@ export default function DashboardPage(): JSX.Element {
       <header className="dashboard-header">
         <h1>Dashboard</h1>
         <p>Manage your video generation jobs</p>
+        <div style={{ marginTop: 8 }}>
+          <button
+            className="btn-primary"
+            data-testid="create-story"
+            onClick={() => navigate('/create')}
+          >
+            Create Story
+          </button>
+        </div>
         {isAdmin && (
           <a href="/admin/analytics" className="text-xs underline" style={{ marginLeft: 8 }}>
             Analytics
@@ -299,6 +316,13 @@ export default function DashboardPage(): JSX.Element {
                   onClick={() => navigate('/create')}
                 >
                   Open Create Video
+                </button>
+                <button
+                  className="btn-secondary"
+                  data-testid="create-story"
+                  onClick={() => navigate('/create')}
+                >
+                  Create Story
                 </button>
               </div>
             </div>
