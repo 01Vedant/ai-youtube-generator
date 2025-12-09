@@ -61,7 +61,7 @@ export const JobProgressCard: React.FC<JobProgressCardProps> = ({ jobId, onRetry
   if (!job) return <div>Loading...</div>;
 
   return (
-    <div className="job-progress-card">
+    <div className="job-progress-card" data-testid="job-progress-card">
       <h3>Render Status: {job.status}</h3>
       {job.status === 'queued' && <p>Queued...</p>}
       {job.status === 'running' && <p>Rendering... <span className="spinner" /></p>}
@@ -72,11 +72,11 @@ export const JobProgressCard: React.FC<JobProgressCardProps> = ({ jobId, onRetry
             const image = job.artifacts.find(a => a.type === 'image');
             const audio = job.artifacts.find(a => a.type === 'audio');
             if (video) {
-              return <video controls src={video.url} style={{ maxWidth: '100%' }} />;
+              return <video controls src={video.url} style={{ maxWidth: '100%' }} data-testid="scene-thumb-video" />;
             } else if (image) {
-              return <img src={image.url} alt="Preview" style={{ maxWidth: '100%' }} />;
+              return <img src={image.url} alt="Preview" style={{ maxWidth: '100%' }} data-testid="scene-thumb-image" />;
             } else if (audio) {
-              return <audio controls src={audio.url} />;
+              return <audio controls src={audio.url} data-testid="scene-thumb-audio" />;
             } else {
               return (
                 <div>

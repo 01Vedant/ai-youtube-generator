@@ -37,7 +37,7 @@ export default function JobProgressCard({ job, setLastJob }){
   const percent = status.progress_percent || (status.status === 'completed' ? 100 : 10);
 
   return (
-    <div className="bg-white/5 border border-white/10 rounded p-4 mt-4">
+    <div className="bg-white/5 border border-white/10 rounded p-4 mt-4" data-testid="job-progress-card">
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold">Job: {status.job_id}</h3>
@@ -52,7 +52,7 @@ export default function JobProgressCard({ job, setLastJob }){
       <div className="mt-4 space-y-3">
         { scenes.length === 0 && <div className="text-sm text-white/60">Waiting for scenes to be created…</div> }
         { scenes.map((s, idx) => (
-          <div key={idx} className="p-2 bg-black/30 rounded">
+          <div key={idx} className="p-2 bg-black/30 rounded" data-testid={`scene-thumb-${idx}`}>
             <div className="flex items-start gap-4">
               <div style={{ width: 160 }}><ScenePreview scene={s} /></div>
               <div className="flex-1">

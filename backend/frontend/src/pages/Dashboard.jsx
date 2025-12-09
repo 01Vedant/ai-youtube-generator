@@ -81,6 +81,7 @@ function Dashboard() {
             className="btn btn-primary btn-lg"
             onClick={() => setShowCreateStoryModal(true)}
             aria-label="Create Story"
+            data-testid="create-story-cta"
           >
             ✨ Create Story
           </button>

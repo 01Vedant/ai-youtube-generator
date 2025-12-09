@@ -1,15 +1,10 @@
-﻿# Python
+# Python
 __pycache__/
-*.py[cod]
-*.pyo
-*.pyd
 .pytest_cache/
-*.egg-info/
 .venv/
-.env
-.env.*
+*.py[cod]
 
-# Node / Frontend
+# Node
 node_modules/
 dist/
 coverage/
@@ -23,8 +18,3 @@ artifacts/
 Thumbs.db
 .vscode/
 .idea/
-
-# Build outputs
-*.mp4
-*.wav
-artifacts/

@@ -42,6 +42,7 @@ export default function Sidebar() {
               className="sidebar-action-btn create-story-btn"
               onClick={() => setShowCreateStoryModal(true)}
               aria-label="Create Story"
+              data-testid="create-story-cta"
             >
               <span className="action-icon">✨</span>
               <span className="action-label">Create Story</span>
