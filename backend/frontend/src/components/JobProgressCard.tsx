@@ -20,7 +20,7 @@ export const JobProgressCard: React.FC<JobProgressCardProps> = ({ jobId, onRetry
 
   useEffect(() => {
     let active = true;
-    let pollTimer: ReturnType<typeof setInterval> | null = null;
+    let pollTimer: ReturnType<typeof setTimeout> | undefined;
     const poll = async () => {
       try {
         const res = await getRender(jobId);
@@ -29,41 +29,24 @@ export const JobProgressCard: React.FC<JobProgressCardProps> = ({ jobId, onRetry
         setJob(res);
         if (res.status === 'success') {
           window.__track?.('render_success', { job_id: jobId });
-          if (pollTimer) {
-            clearInterval(pollTimer);
-            pollTimer = null;
-          }
         } else if (res.status === 'error') {
           window.__track?.('render_error', { job_id: jobId });
-          if (pollTimer) {
-            clearInterval(pollTimer);
-            pollTimer = null;
-          }
         } else {
-          return;
+          pollTimer = setTimeout(poll, POLL_INTERVAL);
         }
       } catch (e: any) {
-        if (!active) return;
         if (e.message?.includes('404')) {
           setError('This job was not found');
         } else {
           setError(e.message || 'Unknown error');
         }
         window.__track?.('render_error', { job_id: jobId });
-        if (pollTimer) {
-          clearInterval(pollTimer);
-          pollTimer = null;
-        }
       }
     };
     poll();
-    pollTimer = setInterval(poll, POLL_INTERVAL);
     return () => {
       active = false;
-      if (pollTimer) {
-        clearInterval(pollTimer);
-        pollTimer = null;
-      }
+      if (pollTimer) clearTimeout(pollTimer);
     };
   }, [jobId]);
 

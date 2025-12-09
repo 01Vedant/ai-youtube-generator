@@ -1,8 +1,16 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "types": ["vite/client", "node"]
+    "baseUrl": ".",
+    "paths": { "@/*": ["src/*"] },
+    "jsx": "react-jsx",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "target": "es2022",
+    "skipLibCheck": true,
+    "noImplicitAny": false,
+    "types": ["vite/client"]
   },
-  "include": ["src", "vite-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["src", "vite-env.d.ts"],
   "exclude": ["dist", "node_modules", "**/*.test.ts", "**/*.test.tsx"]
 }
