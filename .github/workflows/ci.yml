@@ -1,23 +1,62 @@
-name: CI
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+﻿name: CI
+on: [push, pull_request]
 
 jobs:
-  build:
+  core:
     runs-on: ubuntu-latest
+    env:
+      SIMULATE_RENDER: "1"
+      PW_BASE_URL: http://localhost:5173
+
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
 
-      - name: Install, Typecheck, and Build Frontend
+      - name: Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Backend deps + tests
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pytest -q
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: backend/frontend/package-lock.json
+
+      - name: Frontend deps + typecheck
         working-directory: backend/frontend
         run: |
-          npm install
+          npm ci
           npm run typecheck
-          npm run build
+
+      - name: Start backend + frontend
+        run: |
+          mkdir -p backend/artifacts backend/frontend/artifacts
+          nohup uvicorn backend.backend.main:app --port 8000 > backend/artifacts/dev-backend.log 2>&1 &
+          cd backend/frontend
+          nohup npm run dev > ../../backend/artifacts/dev-frontend.log 2>&1 &
+          npx wait-on http://localhost:5173
+
+      - name: Install Playwright
+        working-directory: backend/frontend
+        run: npx playwright install --with-deps
+
+      - name: E2E
+        working-directory: backend/frontend
+        run: npm run e2e
+
+      - name: Upload E2E artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-artifacts
+          path: |
+            backend/frontend/artifacts/playwright-report
+            backend/artifacts/dev-backend.log
+            backend/artifacts/dev-frontend.log
+
