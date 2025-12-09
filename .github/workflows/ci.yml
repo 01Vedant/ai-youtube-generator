@@ -59,4 +59,3 @@ jobs:
             backend/frontend/artifacts/playwright-report
             backend/artifacts/dev-backend.log
             backend/artifacts/dev-frontend.log
-
