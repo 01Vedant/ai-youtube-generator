@@ -260,7 +260,7 @@ export const CreateVideoPage: React.FC = () => {
   };
 
   return (
-    <div className="create-video-page">
+    <div className="create-video-page" data-testid="create-story-modal">
       <div className="container">
         {/* Templates Panel */}
         <section className="templates-section">
@@ -334,6 +334,7 @@ export const CreateVideoPage: React.FC = () => {
               <label htmlFor="topic">Topic</label>
               <input
                 id="topic"
+                data-testid="title-input"
                 type="text"
                 value={formData.topic}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData((prev: RenderPlan) => ({ ...prev, topic: e.target.value }))}
@@ -432,6 +433,7 @@ export const CreateVideoPage: React.FC = () => {
                 <input
                   id="style"
                   type="text"
+                  data-testid="description-input"
                   value={formData.style}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     const t = e.target.value;
@@ -491,6 +493,7 @@ export const CreateVideoPage: React.FC = () => {
                   <label htmlFor={`narration-${idx}`}>Narration Text</label>
                   <textarea
                     id={`narration-${idx}`}
+                    data-testid="fulltext-input"
                     value={scene.narration}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                       handleSceneChange(idx, 'narration', e.target.value);
@@ -669,6 +672,7 @@ export const CreateVideoPage: React.FC = () => {
           <div className="form-actions">
             <button
               type="submit"
+              data-testid="submit-create"
               disabled={loading || !isValid}
               className="btn-primary"
               aria-label={loading ? 'Creating video...' : 'Create video'}

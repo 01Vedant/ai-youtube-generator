@@ -25,6 +25,7 @@ export default function LandingPage(): JSX.Element {
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
+  const [fullText, setFullText] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
   const PUBLIC_ENABLED = import.meta.env.VITE_PUBLIC_ENABLED === 'true';
@@ -53,7 +54,7 @@ export default function LandingPage(): JSX.Element {
       const parsedDuration = Number(duration);
       const durationSec = Number.isFinite(parsedDuration) && parsedDuration > 0 ? parsedDuration : undefined;
       const res = await startRender({
-        script: description || title || 'Untitled story',
+        script: fullText || description || title || 'Untitled story',
         duration_sec: durationSec,
       });
       window.__track?.('render_start', { job_id: res.job_id });
@@ -133,6 +134,7 @@ export default function LandingPage(): JSX.Element {
                   <label htmlFor="create-title" style={{ fontWeight: 600 }}>Title</label>
                   <input
                     id="create-title"
+                    data-testid="title-input"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="e.g., Festival of Lights"
@@ -145,6 +147,7 @@ export default function LandingPage(): JSX.Element {
                   <label htmlFor="create-description" style={{ fontWeight: 600 }}>Description</label>
                   <textarea
                     id="create-description"
+                    data-testid="description-input"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="One-line summary of the story"
@@ -160,6 +163,7 @@ export default function LandingPage(): JSX.Element {
                     type="number"
                     min={5}
                     max={300}
+                    data-testid="duration-input"
                     value={duration}
                     onChange={(e) => setDuration(e.target.value)}
                     placeholder="30"
@@ -167,10 +171,23 @@ export default function LandingPage(): JSX.Element {
                     style={{ width: '100%', padding: 10, marginTop: 6 }}
                   />
                 </div>
+                <div>
+                  <label htmlFor="create-full-text" style={{ fontWeight: 600 }}>Full Story Text (optional)</label>
+                  <textarea
+                    id="create-full-text"
+                    data-testid="fulltext-input"
+                    value={fullText}
+                    onChange={(e) => setFullText(e.target.value)}
+                    placeholder="Paste full story text here"
+                    aria-label="Full text"
+                    rows={4}
+                    style={{ width: '100%', padding: 10, marginTop: 6 }}
+                  />
+                </div>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                   <button
                     type="submit"
-                    data-testid="create-story-submit"
+                    data-testid="submit-create"
                     disabled={creating}
                     style={{ padding: '10px 18px', fontSize: 16 }}
                   >

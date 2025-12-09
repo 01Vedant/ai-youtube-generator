@@ -9,6 +9,8 @@
         "test": "vitest run",
         "test:watch": "vitest",
         "e2e": "playwright test",
+        "e2e:smoke": "playwright test e2e/smoke.spec.ts",
+        "e2e:flag": "playwright test -g \"marketplace flag gating\"",
         "e2e:headed": "playwright test --headed",
         "build": "vite build",
         "preview": "vite preview",
