@@ -13,3 +13,5 @@ pwsh scripts/smoke_video.ps1
 ```
 
 On success, you should see `SMOKE OK` and a non-empty file at `scripts/_out/smoke.mp4`.
+
+
