@@ -1,6 +1,3 @@
-[![CI](https://github.com/01Vedant/ai-youtube-generator/actions/workflows/ci.yml/badge.svg)](https://github.com/01Vedant/ai-youtube-generator/actions/workflows/ci.yml)
-
-
 # BhaktiGen
 
 ## Video Pipeline Quickcheck

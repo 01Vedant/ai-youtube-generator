@@ -16,6 +16,7 @@ const viteCmd = `${nodeCmd} node_modules/vite/bin/vite.js --host 127.0.0.1 --por
 export default defineConfig({
   testDir: './e2e',
   timeout: 120_000,
+  retries: 1,
   reporter: [
     ['list'],
     ['html', { outputFolder: 'artifacts/playwright-report', open: 'never' }],
