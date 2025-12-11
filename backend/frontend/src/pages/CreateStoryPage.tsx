@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { TID } from '@/components/CreateStoryButton';
 
 // E2E mode detection (dev only)
 const isDev = typeof import.meta !== 'undefined' ? !!import.meta.env.DEV : true;
@@ -12,7 +13,7 @@ function E2EThumbnail({ show }: { show: boolean }) {
   return (
     <div style={{ marginTop: 16 }}>
       <img
-        data-testid="thumbnail"
+        data-testid={TID.thumb}
         src="/static/placeholders/placeholder_4k.png"
         alt="e2e-thumbnail"
         style={{ width: 320, height: 'auto', borderRadius: 12 }}
@@ -59,7 +60,7 @@ export default function CreateStoryPage() {
         <div>
           <label className="block text-sm font-medium">Title</label>
           <input
-            data-testid="title-input"
+            data-testid={TID.title}
             className="mt-1 w-full rounded border px-3 py-2"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -69,7 +70,7 @@ export default function CreateStoryPage() {
         <div>
           <label className="block text-sm font-medium">Description</label>
           <input
-            data-testid="description-input"
+            data-testid={TID.desc}
             className="mt-1 w-full rounded border px-3 py-2"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -79,7 +80,7 @@ export default function CreateStoryPage() {
         <div>
           <label className="block text-sm font-medium">Full Text</label>
           <textarea
-            data-testid="fulltext-input"
+            data-testid={TID.full}
             className="mt-1 w-full rounded border px-3 py-2"
             rows={6}
             value={fullText}
@@ -89,7 +90,7 @@ export default function CreateStoryPage() {
         </div>
         <button
           type="submit"
-          data-testid="create-story-submit"
+          data-testid={TID.submit}
           className="rounded bg-blue-600 px-4 py-2 text-white disabled:opacity-60"
           disabled={!canSubmit || submitting}
         >
@@ -102,4 +103,3 @@ export default function CreateStoryPage() {
     </main>
   );
 }
-

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export const TID = {
@@ -17,7 +17,7 @@ export default function CreateStoryButton(): JSX.Element {
   const navigate = useNavigate();
   return (
     <button
-      data-testid={TID.createTop}
+      data-testid="create-story"
       className="rounded bg-blue-600 px-4 py-2 text-white"
       onClick={() => navigate('/create?e2e=1')}
     >
@@ -25,3 +25,4 @@ export default function CreateStoryButton(): JSX.Element {
     </button>
   );
 }
+

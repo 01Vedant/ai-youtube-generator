@@ -1,26 +1,19 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import path from "path";
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import path from 'node:path'
 
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      '@': path.resolve(__dirname, './src'),
     },
   },
-  server: {
-    watch: {
-      ignored: [
-        "**/artifacts/**",
-        "**/playwright-report/**",
-        "**/test-results/**"
-      ],
-    },
-    port: 5173,
-    strictPort: true,
-    fs: {
-      deny: ["artifacts"],       // don't serve artifacts
-    },
+  test: {
+    environment: 'jsdom',
+    globals: true,              // 🔥 let Vitest create global describe/it/expect/vi
+    setupFiles: './setupTests.ts',
+    include: ['src/**/*.test.{ts,tsx}'],
+    exclude: ['e2e/**', 'node_modules/**', 'dist/**'],
   },
-});
+})

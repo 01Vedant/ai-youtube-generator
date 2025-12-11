@@ -1,17 +1,15 @@
-{
-  "extends": "./tsconfig.app.json",
+﻿{
   "compilerOptions": {
-    "baseUrl": ".",
-    "paths": { "@/*": ["src/*"] },
-    "jsx": "react-jsx",
-    "module": "esnext",
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
     "moduleResolution": "bundler",
-    "target": "es2022",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
     "skipLibCheck": true,
-    "strict": false,
-    "noImplicitAny": false,
-    "types": ["vite/client"]
+    "baseUrl": ".",
+    "paths": { "@/*": ["src/*"] }
   },
-  "include": ["src", "vite-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["dist", "node_modules", "**/*.test.ts", "**/*.test.tsx"]
+  "include": ["src", "vite-env.d.ts"]
 }

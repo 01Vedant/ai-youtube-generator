@@ -1,6 +1,6 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { vi } from 'vitest';
 import RenderStatusPage from '@/pages/RenderStatusPage';
 
 const getRender = vi.fn();
