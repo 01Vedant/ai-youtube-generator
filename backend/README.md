@@ -545,7 +545,7 @@ This platform is **production-ready** and can be deployed TODAY. Everything you 
 This is a **world-class platform**. It's designed for:
 
 👵 **Your girlfriend's mother** - Can create videos with no technical knowledge
-👨‍💼 **Entrepreneurs** - Can monetize by charging for video creation
+👨💼 **Entrepreneurs** - Can monetize by charging for video creation
 🎓 **Educators** - Can create educational devotional content at scale
 🕉️ **Spiritual Communities** - Can share ancient wisdom in modern format
 📹 **Content Creators** - Can automate bulk video production
