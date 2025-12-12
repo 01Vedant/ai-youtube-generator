@@ -1,4 +1,4 @@
-import { runPreflight, type PreflightResponse } from "../api/preflight";
+﻿import { runPreflight, type PreflightResponse } from "../api/preflight";
 import { PreflightStatusPill } from "@/components/PreflightStatusPill";
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -257,7 +257,7 @@ export const CreateVideoPage: React.FC = () => {
         })
       };
 
-      const response = await startRender({ script: planToSubmit.topic || planToSubmit.scenes[0]?.narration || '', duration_sec: 10 });
+      const response = await startRender(planToSubmit as any);
       if (selectedProjectId) {
         try { await assignToProject(selectedProjectId, response.job_id); } catch {}
       }
