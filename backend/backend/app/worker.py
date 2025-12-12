@@ -46,11 +46,22 @@ def process_once(sleep_when_empty: float = 0.2, heartbeat_sec: int = 10) -> bool
     job_id = job["id"]
     payload = json.loads(job["payload"]) if isinstance(job["payload"], str) else job["payload"]
     try:
+        try:
+            row_pre = get_job_row(job_id)
+            if row_pre and row_pre.get("status") in ("cancelled", "canceled"):
+                try:
+                    from app.logs.activity import log_event
+                    log_event(job_id, "job_cancelled", "Skipped cancelled job before start")
+                except Exception:
+                    pass
+                return True
+        except Exception:
+            pass
         mark_running(job_id)
         # Skip already-cancelled jobs
         try:
             row = get_job_row(job_id)
-            if row and row.get("status") == "cancelled":
+            if row and row.get("status") in ("cancelled", "canceled"):
                 try:
                     from app.logs.activity import log_event
                     log_event(job_id, "job_cancelled", "Skipped cancelled job")

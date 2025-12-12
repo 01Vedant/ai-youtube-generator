@@ -237,9 +237,9 @@ def _build_artifact_map(raw: Dict[str, Any]) -> Dict[str, str]:
 def _format_job_status(raw: Dict[str, Any]) -> Dict[str, Any]:
     state = (raw.get("state") or "unknown").lower()
 
-    if state == "cancelled":
+    if state in {"cancelled", "canceled"}:
         return {
-            "status": "cancelled",
+            "status": "canceled",
             "error": {
                 "code": "CANCELLED",
                 "phase": "finalize",
@@ -645,7 +645,7 @@ def get_render_status(job_id: str, user=Depends(get_current_user)):
             if qstatus == "failed":
                 err = {"code": qrow.get("err_code") or "UNKNOWN", "message": qrow.get("err_message") or "Render failed", "phase": "finalize"}
                 return _format_job_status({"state": "error", "error": err})
-            if qstatus == "cancelled":
+            if qstatus in ("cancelled", "canceled"):
                 return _format_job_status({"state": "cancelled"})
 
         # If completed or if no queue row, fall back to job summary/artifacts
@@ -875,10 +875,10 @@ def cancel_render(job_id: str, user=Depends(get_current_user)):
     if status not in ("queued", "running"):
         raise HTTPException(status_code=409, detail=f"Job is already {status or 'completed'}")
 
-    mark_cancelled(job_id, reason="User requested cancel")
-    set_status(job_id, state="cancelled", step="cancelled", progress_pct=qrow.get("progress_pct"))
+    mark_cancelled(job_id, reason="user_cancel")
+    set_status(job_id, state="canceled", step="cancelled", progress_pct=qrow.get("progress_pct"))
     try:
         log_event(job_id, "job_cancelled", "User cancelled render", {"user_id": user["id"]})
     except Exception:
         pass
-    return _format_job_status({"state": "cancelled"})
+    return {"ok": True, "job_id": job_id, "status": "canceled"}
