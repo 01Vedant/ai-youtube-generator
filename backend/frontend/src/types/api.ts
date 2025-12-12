@@ -9,7 +9,7 @@ export type Voice = 'F' | 'M';
 export type Language = 'en' | 'hi';
 export type DurationSec = number; // 1..600
 
-export type JobState = 'pending' | 'running' | 'success' | 'error';
+export type JobState = 'pending' | 'running' | 'success' | 'error' | 'cancelled';
 export type PipelineStep =
   | 'images'
   | 'tts'
@@ -197,6 +197,13 @@ const CompletedStatusSchema = z
   })
   .merge(NonFailedStatusExtras);
 
+const CancelledStatusSchema = z
+  .object({
+    status: z.literal('cancelled'),
+    error: OrchestratorErrorSchema.optional(),
+  })
+  .merge(SharedStatusFields.partial());
+
 const FailedStatusSchema = z
   .object({
     status: z.literal('failed'),
@@ -215,6 +222,7 @@ export const JobStatusSchema = z.union([
   RunningStatusSchema,
   FailedStatusSchema,
   CompletedStatusSchema,
+  CancelledStatusSchema,
 ]);
 export type JobStatus = z.infer<typeof JobStatusSchema>;
 

@@ -25,7 +25,7 @@ from backend.app.artifacts_storage.factory import get_storage
 from backend.app.logs.activity import log_event
 from backend.app.auth.security import get_current_user
 from backend.app.usage.service import check_quota_or_raise, inc_renders
-from backend.app.db import get_conn, enqueue_job, get_job_row
+from backend.app.db import get_conn, enqueue_job, get_job_row, mark_cancelled
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/render", tags=["render"])
@@ -236,6 +236,17 @@ def _build_artifact_map(raw: Dict[str, Any]) -> Dict[str, str]:
 
 def _format_job_status(raw: Dict[str, Any]) -> Dict[str, Any]:
     state = (raw.get("state") or "unknown").lower()
+
+    if state == "cancelled":
+        return {
+            "status": "cancelled",
+            "error": {
+                "code": "CANCELLED",
+                "phase": "finalize",
+                "message": "Job cancelled",
+                "meta": raw.get("error") if isinstance(raw.get("error"), dict) else {},
+            },
+        }
 
     if state in {"success", "completed"}:
         response: Dict[str, Any] = {
@@ -634,6 +645,8 @@ def get_render_status(job_id: str, user=Depends(get_current_user)):
             if qstatus == "failed":
                 err = {"code": qrow.get("err_code") or "UNKNOWN", "message": qrow.get("err_message") or "Render failed", "phase": "finalize"}
                 return _format_job_status({"state": "error", "error": err})
+            if qstatus == "cancelled":
+                return _format_job_status({"state": "cancelled"})
 
         # If completed or if no queue row, fall back to job summary/artifacts
         status = get_status(job_id)
@@ -825,3 +838,47 @@ def duplicate_job(job_id: str, overrides: Optional[RegenerateOverrides] = None, 
 def regenerate_job(job_id: str, overrides: Optional[RegenerateOverrides] = None, user=Depends(get_current_user)):
     """Alias for duplicate; maintained for API clarity."""
     return duplicate_job(job_id, overrides, user)  # type: ignore[arg-type]
+
+
+@router.post("/{job_id}/cancel")
+def cancel_render(job_id: str, user=Depends(get_current_user)):
+    """Cancel a queued/running render job."""
+    # Auth + ownership
+    if not user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    try:
+        conn = get_conn()
+        try:
+            owner = conn.execute("SELECT user_id FROM jobs_index WHERE id = ?", (job_id,)).fetchone()
+        finally:
+            conn.close()
+        if not owner:
+            raise HTTPException(status_code=404, detail="Job not found")
+        if owner["user_id"] != user["id"]:
+            raise HTTPException(status_code=403, detail="Forbidden")
+    except HTTPException:
+        raise
+    except Exception:
+        # ownership unknown, continue best-effort
+        pass
+
+    qrow = get_job_row(job_id)
+    if not qrow:
+        fallback_status = get_status(job_id)
+        if fallback_status:
+            state = str(fallback_status.get("state") or "").lower()
+            if state in {"success", "completed", "error", "failed", "cancelled"}:
+                raise HTTPException(status_code=409, detail=f"Job is already {state}")
+        raise HTTPException(status_code=404, detail="Job not found")
+
+    status = qrow.get("status")
+    if status not in ("queued", "running"):
+        raise HTTPException(status_code=409, detail=f"Job is already {status or 'completed'}")
+
+    mark_cancelled(job_id, reason="User requested cancel")
+    set_status(job_id, state="cancelled", step="cancelled", progress_pct=qrow.get("progress_pct"))
+    try:
+        log_event(job_id, "job_cancelled", "User cancelled render", {"user_id": user["id"]})
+    except Exception:
+        pass
+    return _format_job_status({"state": "cancelled"})
