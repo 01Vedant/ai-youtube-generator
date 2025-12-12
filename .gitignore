@@ -24,3 +24,7 @@ backend/frontend/playwright-report/
 Thumbs.db
 .vscode/
 .idea/
+
+# Editor backups
+*.bak
+
