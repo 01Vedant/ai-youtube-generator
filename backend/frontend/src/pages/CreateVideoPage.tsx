@@ -1,4 +1,5 @@
 import { runPreflight, type PreflightResponse } from "../api/preflight";
+import { PreflightStatusPill } from "@/components/PreflightStatusPill";
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { startRender, ttsPreview, listProjects, assignToProject, sendOnboardingEvent } from '../lib/api';
@@ -311,6 +312,7 @@ export const CreateVideoPage: React.FC = () => {
               </select>
             </div>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <PreflightStatusPill />
               <UsageBadge />
               <a href="#/usage" className="text-xs" style={{ marginLeft: 8 }} aria-label="View usage">View usage →</a>
               <button
