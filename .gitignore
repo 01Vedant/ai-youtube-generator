@@ -9,8 +9,14 @@ node_modules/
 dist/
 coverage/
 .vite/
+
+# Playwright
 .playwright/
 artifacts/
+backend/frontend/test-results/
+backend/frontend/playwright-report/
+
+# Logs
 *.log
 
 # OS / Editors
