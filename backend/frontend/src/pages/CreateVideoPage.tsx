@@ -1,8 +1,4 @@
-/**
- * CreateVideoPage: Form to create new video render jobs.
- * Fully typed; no implicit any. Proper a11y and validation.
- */
-
+import { runPreflight, type PreflightResponse } from "../api/preflight";
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { startRender, ttsPreview, listProjects, assignToProject, sendOnboardingEvent } from '../lib/api';
@@ -26,6 +22,32 @@ export const CreateVideoPage: React.FC = () => {
   const [previewLoading, setPreviewLoading] = useState<Record<number, boolean>>({});
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
+
+  // Preflight (backend readiness checks)
+  const [preflight, setPreflight] = useState<PreflightResponse | null>(null);
+  const [preflightError, setPreflightError] = useState<string | null>(null);
+  const [preflightLoading, setPreflightLoading] = useState(false);
+
+  const onRunPreflight = async (): Promise<void> => {
+    setPreflightLoading(true);
+    setPreflightError(null);
+
+    try {
+      const res = await runPreflight();
+      setPreflight(res);
+
+      if (res.ok) toast.success("Preflight OK");
+      else toast.error("Preflight found issues");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setPreflight(null);
+      setPreflightError(msg);
+      toast.error("Preflight failed");
+    } finally {
+      setPreflightLoading(false);
+    }
+  };
+
   const [formData, setFormData] = useState<RenderPlan>(() => {
     // Check if restoring from duplication
     const state = location.state as { prefill?: RenderPlan } | undefined;
@@ -290,7 +312,7 @@ export const CreateVideoPage: React.FC = () => {
             </div>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
               <UsageBadge />
-               <a href="#/usage" className="text-xs" style={{ marginLeft: 8 }} aria-label="View usage">View usage →</a>
+              <a href="#/usage" className="text-xs" style={{ marginLeft: 8 }} aria-label="View usage">View usage →</a>
               <button
                 type="button"
                 onClick={handleLoadHindiSample}
@@ -669,7 +691,67 @@ export const CreateVideoPage: React.FC = () => {
             </div>
           )}
 
-          <div className="form-actions">
+          {/* Preflight output */}
+          {(preflightError || preflight) && (
+            <div style={{ marginTop: 12, padding: 12, border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8 }}>
+              {preflightError && (
+                <div role="alert">❌ {preflightError}</div>
+              )}
+
+              {preflight && (
+                <div>
+                  <div style={{ marginBottom: 8 }}>
+                    <strong>Preflight:</strong> {preflight.ok ? "✅ OK" : "❌ Issues found"}
+                  </div>
+
+                  {preflight.errors?.length > 0 && (
+                    <div style={{ marginBottom: 8 }}>
+                      <div><strong>Errors</strong></div>
+                      <ul>
+                        {preflight.errors.map((e, idx) => (
+                          <li key={idx}>❌ {e}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {preflight.warnings?.length > 0 && (
+                    <div style={{ marginBottom: 8 }}>
+                      <div><strong>Warnings</strong></div>
+                      <ul>
+                        {preflight.warnings.map((w, idx) => (
+                          <li key={idx}>⚠️ {w}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  <div>
+                    <div><strong>Checks</strong></div>
+                    <ul>
+                      {preflight.checks?.map((c, idx) => (
+                        <li key={idx}>
+                          {c.status === "pass" ? "✅" : c.status === "warn" ? "⚠️" : "❌"} {c.name}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="form-actions" style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <button
+              type="button"
+              onClick={onRunPreflight}
+              className="btn-secondary"
+              disabled={preflightLoading}
+              aria-label="Run preflight checks"
+            >
+              {preflightLoading ? "Running Preflight..." : "Run Preflight"}
+            </button>
+
             <button
               type="submit"
               data-testid="submit-create"
