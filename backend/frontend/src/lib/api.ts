@@ -1,43 +1,20 @@
-export interface RenderJob {
-  id: string;
-  status: "queued" | "running" | "success" | "error";
-  artifacts?: Array<{ type: "video" | "audio" | "image" | "json"; url: string; meta?: any }>;
-  error?: string;
-}
-
-const API = (import.meta.env.VITE_API_BASE_URL || "/api").replace(/\/+$/, "");
-
-export async function startRender(input: { script?: string; template_id?: string | number; duration_sec?: number }): Promise<{ job_id: string }> {
-  const r = await fetch(`${API}/render`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
-  if (!r.ok) throw new Error("render start failed");
-  return r.json();
-}
-
-export async function getRender(jobId: string): Promise<RenderJob> {
-  const r = await fetch(`${API}/render/${jobId}`);
-  if (!r.ok) throw new Error("render poll failed");
-  return r.json();
-}
-/**
- * Calls the backend /debug/echo endpoint
- */
-export async function debugEcho(): Promise<{ ok: boolean; env: string }> {
-  return fetchJson<{ ok: boolean; env: string }>("/debug/echo");
-}
-/**
- * API client with unified fetch wrapper
- * Handles CORS credentials based on environment configuration
- */
-
+import type { InputsSchema } from '@/types/plan';
+import type { Project, ProjectCreate, ProjectUpdate } from '@/types/projects';
+import { FetchLibraryResponseSchema, type FetchLibraryResponse } from '../schemas/library';
+import type { AdminJobsRes, AdminUsageRes, AdminUsersRes } from '../types/admin';
+import type { AppUser } from '../types/app';
+import type { AuthTokens, Me } from '../types/auth';
+import type { FetchLibraryParams } from '../types/library';
 import {
   JobStatusSchema,
   type JobStatus,
   type PublishSchedule,
 } from '../types/api';
-import type { AppUser } from '../types/app';
-import type { Project, ProjectCreate, ProjectUpdate } from '@/types/projects';
-import type { FetchLibraryParams } from '../types/library';
-import { FetchLibraryResponseSchema, type FetchLibraryResponse } from '../schemas/library';
+
+/**
+ * API client with unified fetch wrapper
+ * Handles CORS credentials based on environment configuration
+ */
 
 const API_BASE: string = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000';
 
@@ -139,6 +116,13 @@ async function fetchJson<T>(
 }
 
 /**
+ * Calls the backend /debug/echo endpoint
+ */
+export async function debugEcho(): Promise<{ ok: boolean; env: string }> {
+  return fetchJson<{ ok: boolean; env: string }>('/debug/echo');
+}
+
+/**
  * Get render job status
  */
 export async function getStatus(jobId: string): Promise<JobStatus> {
@@ -162,7 +146,6 @@ export async function submitRender(payload: unknown): Promise<{ job_id: string }
   });
 }
 // Admin API
-import type { AdminUsersRes, AdminJobsRes, AdminUsageRes } from '../types/admin';
 
 export async function getAdminUsers(params: { page?: number; pageSize?: number; q?: string; sort?: string } = {}): Promise<AdminUsersRes> {
   const usp = new URLSearchParams();
@@ -236,7 +219,6 @@ export async function putTemplatePlan(id: string, plan: Plan): Promise<{ plan: P
 }
 
 // Template variables APIs
-import type { InputsSchema } from '@/types/plan';
 
 export async function getTemplateVars(id: string): Promise<{ vars: string[]; inputs_schema?: InputsSchema }>{
   return fetchJson(`/templates/${id}/vars`);
@@ -272,15 +254,18 @@ export type OnboardingState = {
 
 export async function getOnboardingState(): Promise<OnboardingState> {
   try {
-    const r = await fetch(`${API}/onboarding/state`);
-    if (!r.ok) return { seen_welcome: false, steps: {} };
-    return r.json();
-  } catch { return { seen_welcome: false, steps: {} }; }
+    return await fetchJson<OnboardingState>('/onboarding/state');
+  } catch {
+    return { seen_welcome: false, steps: {} };
+  }
 }
 
-export async function sendOnboardingEvent(_ : string): Promise<void> {
+export async function sendOnboardingEvent(event: string): Promise<void> {
   try {
-    await fetch(`${API}/onboarding/event`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ event: _ }) });
+    await fetchJson('/onboarding/event', {
+      method: 'POST',
+      body: JSON.stringify({ event }),
+    });
   } catch {}
 }
 
@@ -769,7 +754,6 @@ export function getAuthHeaders(): Record<string, string> {
 export { fetchJson };
 
 // Auth APIs
-import type { AuthTokens, Me } from '../types/auth';
 
 export async function register(email: string, password: string): Promise<{ ok: true } | { ok: false; error: string }> {
   try {
@@ -822,6 +806,66 @@ export async function exportToYouTube(req: ExportYouTubeReq): Promise<ExportYouT
     body: JSON.stringify(req),
   });
 }
+
+export async function startRender(input: unknown): Promise<{ job_id: string }> {
+  return submitRender(input);
+}
+
+export type RenderArtifactType = "video" | "audio" | "image" | "json";
+
+export interface RenderArtifact {
+  type: RenderArtifactType;
+  url: string;
+  meta?: unknown;
+}
+
+export interface RenderJob {
+  id: string;
+  status: "queued" | "running" | "success" | "error";
+  artifacts?: RenderArtifact[];
+  error?: string;
+}
+
+/**
+ * Back-compat: older UI expects getRender() + RenderJob.
+ * We map the current /render/{job_id}/status envelope to the legacy shape.
+ */
+export async function getRender(jobId: string): Promise<RenderJob> {
+  const raw: any = await fetchJson<any>(`/render/${jobId}/status`);
+
+  const state = String(raw?.status ?? raw?.state ?? "queued").toLowerCase();
+
+  const status: RenderJob["status"] =
+    state === "queued" || state === "running"
+      ? state
+      : state === "success" || state === "completed"
+        ? "success"
+        : state === "error" || state === "failed"
+          ? "error"
+          : "queued";
+
+  const artsRaw: any[] | undefined =
+    Array.isArray(raw?.artifacts) ? raw.artifacts :
+    Array.isArray(raw?.outputs) ? raw.outputs :
+    Array.isArray(raw?.result?.artifacts) ? raw.result.artifacts :
+    undefined;
+
+  const artifacts: RenderArtifact[] | undefined = artsRaw?.map((a: any) => ({
+    type: (a?.type ?? a?.kind ?? "json") as RenderArtifactType,
+    url: String(a?.url ?? a?.href ?? a?.path ?? ""),
+    meta: a?.meta ?? undefined,
+  }));
+
+  const error =
+    typeof raw?.error === "string"
+      ? raw.error
+      : typeof raw?.error?.message === "string"
+        ? raw.error.message
+        : undefined;
+
+  return { id: jobId, status, artifacts, error };
+}
+
 
 // Projects API
 export async function listProjects(): Promise<Project[]> {
