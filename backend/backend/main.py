@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-
 from backend.backend.routes.shares import router as shares_router
 from backend.routes.preflight import router as preflight_router
 
