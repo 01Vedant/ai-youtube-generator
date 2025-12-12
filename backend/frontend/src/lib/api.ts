@@ -807,11 +807,12 @@ export async function exportToYouTube(req: ExportYouTubeReq): Promise<ExportYouT
   });
 }
 
+// Backward compatibility layer for legacy callers
 export async function startRender(input: unknown): Promise<{ job_id: string }> {
   return submitRender(input);
 }
 
-export type RenderArtifactType = "video" | "audio" | "image" | "json";
+export type RenderArtifactType = 'video' | 'audio' | 'image' | 'json';
 
 export interface RenderArtifact {
   type: RenderArtifactType;
@@ -821,51 +822,56 @@ export interface RenderArtifact {
 
 export interface RenderJob {
   id: string;
-  status: "queued" | "running" | "success" | "error";
+  status: 'queued' | 'running' | 'success' | 'error';
   artifacts?: RenderArtifact[];
   error?: string;
 }
 
-/**
- * Back-compat: older UI expects getRender() + RenderJob.
- * We map the current /render/{job_id}/status envelope to the legacy shape.
- */
 export async function getRender(jobId: string): Promise<RenderJob> {
-  const raw: any = await fetchJson<any>(`/render/${jobId}/status`);
+  const raw = await fetchJson<unknown>(`/render/${jobId}/status`);
+  const parsed = JobStatusSchema.safeParse(raw);
+  if (!parsed.success) {
+    throw new Error(`Invalid job status payload: ${parsed.error.message}`);
+  }
+  const status = parsed.data;
 
-  const state = String(raw?.status ?? raw?.state ?? "queued").toLowerCase();
+  const mapStatus: Record<JobStatus['status'], RenderJob['status']> = {
+    queued: 'queued',
+    running: 'running',
+    completed: 'success',
+    failed: 'error',
+  };
 
-  const status: RenderJob["status"] =
-    state === "queued" || state === "running"
-      ? state
-      : state === "success" || state === "completed"
-        ? "success"
-        : state === "error" || state === "failed"
-          ? "error"
-          : "queued";
+  const toArtifact = (type: string, url: string, meta?: unknown): RenderArtifact => {
+    const allowed: RenderArtifactType[] = ['video', 'audio', 'image', 'json'];
+    const normalized = allowed.includes(type as RenderArtifactType) ? (type as RenderArtifactType) : 'json';
+    return { type: normalized, url, meta };
+  };
 
-  const artsRaw: any[] | undefined =
-    Array.isArray(raw?.artifacts) ? raw.artifacts :
-    Array.isArray(raw?.outputs) ? raw.outputs :
-    Array.isArray(raw?.result?.artifacts) ? raw.result.artifacts :
-    undefined;
+  let artifacts: RenderArtifact[] | undefined;
 
-  const artifacts: RenderArtifact[] | undefined = artsRaw?.map((a: any) => ({
-    type: (a?.type ?? a?.kind ?? "json") as RenderArtifactType,
-    url: String(a?.url ?? a?.href ?? a?.path ?? ""),
-    meta: a?.meta ?? undefined,
-  }));
+  if (status.status === 'completed' && status.artifacts) {
+    const entries = Object.entries(status.artifacts).filter(([, url]) => typeof url === 'string' && url.length > 0);
+    artifacts = entries.map(([type, url]) => toArtifact(type, url));
+  } else if (status.assets?.length) {
+    const mapped = status.assets
+      .filter((asset) => typeof asset?.url === 'string' && !!asset.url)
+      .map((asset) => toArtifact(String(asset.type ?? 'json'), String(asset.url), asset));
+    artifacts = mapped.length ? mapped : undefined;
+  }
 
   const error =
-    typeof raw?.error === "string"
-      ? raw.error
-      : typeof raw?.error?.message === "string"
-        ? raw.error.message
-        : undefined;
+    status.status === 'failed'
+      ? status.error?.message || status.legacy_error || status.error?.code || 'Render failed'
+      : undefined;
 
-  return { id: jobId, status, artifacts, error };
+  return {
+    id: status.job_id ?? jobId,
+    status: mapStatus[status.status],
+    artifacts,
+    error,
+  };
 }
-
 
 // Projects API
 export async function listProjects(): Promise<Project[]> {
