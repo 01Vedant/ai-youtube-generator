@@ -70,7 +70,7 @@ export const JobProgressCard: React.FC<JobProgressCardProps> = ({ jobId, onRetry
     try {
       await cancelRender(jobId);
       setJob((prev) => prev ? { ...prev, status: 'cancelled' } : { id: jobId, status: 'cancelled' as RenderJob['status'] });
-      setShouldPoll(false);
+      setShouldPoll(true);
       setError(null);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to cancel job');
