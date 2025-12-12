@@ -1,4 +1,4 @@
-import { runPreflight, type PreflightResponse } from "../api/preflight";
+﻿import { runPreflight, type PreflightResponse } from "../api/preflight";
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { startRender, ttsPreview, listProjects, assignToProject, sendOnboardingEvent } from '../lib/api';
@@ -112,12 +112,12 @@ export const CreateVideoPage: React.FC = () => {
       scenes: [
         {
           image_prompt: 'temple at sunrise, cinematic',
-          narration: 'भोर की शांति…',
+          narration: 'à¤­à¥‹à¤° à¤•à¥€ à¤¶à¤¾à¤‚à¤¤à¤¿â€¦',
           duration_sec: 4,
         },
         {
           image_prompt: 'mountain in golden light',
-          narration: 'आंतरिक स्थिरता…',
+          narration: 'à¤†à¤‚à¤¤à¤°à¤¿à¤• à¤¸à¥à¤¥à¤¿à¤°à¤¤à¤¾â€¦',
           duration_sec: 4,
         },
       ],
@@ -256,7 +256,7 @@ export const CreateVideoPage: React.FC = () => {
         })
       };
 
-      const response = await startRender({ script: planToSubmit.topic || planToSubmit.scenes[0]?.narration || '', duration_sec: 10 });
+      const response = await startRender(planToSubmit as any);
       if (selectedProjectId) {
         try { await assignToProject(selectedProjectId, response.job_id); } catch {}
       }
@@ -312,7 +312,7 @@ export const CreateVideoPage: React.FC = () => {
             </div>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
               <UsageBadge />
-              <a href="#/usage" className="text-xs" style={{ marginLeft: 8 }} aria-label="View usage">View usage →</a>
+              <a href="#/usage" className="text-xs" style={{ marginLeft: 8 }} aria-label="View usage">View usage â†’</a>
               <button
                 type="button"
                 onClick={handleLoadHindiSample}
@@ -320,7 +320,7 @@ export const CreateVideoPage: React.FC = () => {
                 aria-label="Load Hindi sample"
                 style={{ fontSize: '13px' }}
               >
-                🇮🇳 Use Hindi Sample
+                ðŸ‡®ðŸ‡³ Use Hindi Sample
               </button>
               <button
                 type="button"
@@ -328,7 +328,7 @@ export const CreateVideoPage: React.FC = () => {
                 className="btn-secondary"
                 aria-label="Reset form to blank"
               >
-                🔄 Reset to Blank
+                ðŸ”„ Reset to Blank
               </button>
             </div>
           </div>
@@ -492,7 +492,7 @@ export const CreateVideoPage: React.FC = () => {
                       className="btn-remove"
                       aria-label={`Remove scene ${idx + 1}`}
                     >
-                      ✕ Remove
+                      âœ• Remove
                     </button>
                   )}
                 </div>
@@ -540,7 +540,7 @@ export const CreateVideoPage: React.FC = () => {
                             Loading...
                           </>
                         ) : (
-                          <>🔊 Preview TTS</>
+                          <>ðŸ”Š Preview TTS</>
                         )}
                       </button>
                       {ttsPreviewUrls[idx] && (
@@ -559,7 +559,7 @@ export const CreateVideoPage: React.FC = () => {
                           </div>
                           {Math.abs(ttsPreviewUrls[idx]!.duration_sec - scene.duration_sec) > scene.duration_sec * 0.05 && (
                             <small style={{ color: '#f59e0b', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }} role="status">
-                              ⚠️ Final render will auto-pace to scene length.
+                              âš ï¸ Final render will auto-pace to scene length.
                             </small>
                           )}
                         </div>
@@ -597,7 +597,7 @@ export const CreateVideoPage: React.FC = () => {
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFastPathPreview(e.target.checked)}
                   aria-label="Enable fast path preview mode"
                 />
-                <span>⚡ Preview in 1080p (Fast Path - PROXY mode)</span>
+                <span>âš¡ Preview in 1080p (Fast Path - PROXY mode)</span>
               </label>
               <p className="form-help">
                 Renders faster using GPU acceleration with reduced quality settings for quick previews.
@@ -607,7 +607,7 @@ export const CreateVideoPage: React.FC = () => {
 
           {/* Hybrid Pipeline Features */}
           <section className="form-section">
-            <h2>✨ Hybrid Pipeline Features</h2>
+            <h2>âœ¨ Hybrid Pipeline Features</h2>
             
             <div className="form-group">
               <label htmlFor="enable-parallax" className="checkbox-label">
@@ -620,7 +620,7 @@ export const CreateVideoPage: React.FC = () => {
                   }
                   aria-label="Enable 2.5D parallax motion"
                 />
-                <span>🎬 2.5D Parallax Motion</span>
+                <span>ðŸŽ¬ 2.5D Parallax Motion</span>
               </label>
               <p className="form-help">
                 Adds depth-based layered motion to static images for cinematic camera moves.
@@ -638,7 +638,7 @@ export const CreateVideoPage: React.FC = () => {
                   }
                   aria-label="Enable motion templates"
                 />
-                <span>📐 Motion Templates</span>
+                <span>ðŸ“ Motion Templates</span>
               </label>
               <p className="form-help">
                 Applies title reveals, caption animations, and professional transitions.
@@ -656,7 +656,7 @@ export const CreateVideoPage: React.FC = () => {
                   }
                   aria-label="Enable audio-led editing"
                 />
-                <span>🎵 Audio-Led Editing</span>
+                <span>ðŸŽµ Audio-Led Editing</span>
               </label>
               <p className="form-help">
                 Syncs cuts and transitions to music beats, ducks background music during voiceover.
@@ -695,13 +695,13 @@ export const CreateVideoPage: React.FC = () => {
           {(preflightError || preflight) && (
             <div style={{ marginTop: 12, padding: 12, border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8 }}>
               {preflightError && (
-                <div role="alert">❌ {preflightError}</div>
+                <div role="alert">âŒ {preflightError}</div>
               )}
 
               {preflight && (
                 <div>
                   <div style={{ marginBottom: 8 }}>
-                    <strong>Preflight:</strong> {preflight.ok ? "✅ OK" : "❌ Issues found"}
+                    <strong>Preflight:</strong> {preflight.ok ? "âœ… OK" : "âŒ Issues found"}
                   </div>
 
                   {preflight.errors?.length > 0 && (
@@ -709,7 +709,7 @@ export const CreateVideoPage: React.FC = () => {
                       <div><strong>Errors</strong></div>
                       <ul>
                         {preflight.errors.map((e, idx) => (
-                          <li key={idx}>❌ {e}</li>
+                          <li key={idx}>âŒ {e}</li>
                         ))}
                       </ul>
                     </div>
@@ -720,7 +720,7 @@ export const CreateVideoPage: React.FC = () => {
                       <div><strong>Warnings</strong></div>
                       <ul>
                         {preflight.warnings.map((w, idx) => (
-                          <li key={idx}>⚠️ {w}</li>
+                          <li key={idx}>âš ï¸ {w}</li>
                         ))}
                       </ul>
                     </div>
@@ -731,7 +731,7 @@ export const CreateVideoPage: React.FC = () => {
                     <ul>
                       {preflight.checks?.map((c, idx) => (
                         <li key={idx}>
-                          {c.status === "pass" ? "✅" : c.status === "warn" ? "⚠️" : "❌"} {c.name}
+                          {c.status === "pass" ? "âœ…" : c.status === "warn" ? "âš ï¸" : "âŒ"} {c.name}
                         </li>
                       ))}
                     </ul>
@@ -767,3 +767,4 @@ export const CreateVideoPage: React.FC = () => {
     </div>
   );
 };
+
