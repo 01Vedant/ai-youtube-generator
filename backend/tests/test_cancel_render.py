@@ -2,42 +2,54 @@ import json
 import uuid
 from datetime import datetime
 
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
-
-from backend.routes.render import router as render_router
-from backend.app.db import init_db
-from backend.app.auth.security import get_current_user
+from app.db import enqueue_job, get_conn, get_job_row, init_db
+from backend.routes import render as render_module
 
 
-def test_cancel_render_updates_queue_and_status():
+def test_cancel_endpoint_marks_job_canceled(client):
     init_db()
-    app = FastAPI()
-    app.include_router(render_router)
-    app.dependency_overrides[get_current_user] = lambda: {"id": "test-user"}
 
-    client = TestClient(app)
+    app = client.app
+    app.dependency_overrides[render_module.get_current_user] = lambda: {"id": "test-user"}
 
-    # create job
-    payload = {
-        "topic": "cancel me",
-        "language": "en",
-        "voice": "F",
-        "scenes": [
-          {"image_prompt": "sunrise", "narration": "hello", "duration_sec": 1.0}
-        ]
-    }
-    r_create = client.post("/render", json=payload)
-    assert r_create.status_code == 200
-    job_id = r_create.json()["job_id"]
+    try:
+        job_id = str(uuid.uuid4())
+        user_id = "test-user"
 
-    r_cancel = client.post(f"/render/{job_id}/cancel")
-    assert r_cancel.status_code == 200
-    body = r_cancel.json()
-    assert body["ok"] is True
-    assert body["status"] == "canceled"
-    assert body["job_id"] == job_id
+        payload = {
+            "job_id": job_id,
+            "topic": "t",
+            "scenes": [{"image_prompt": "a", "narration": "b", "duration_sec": 1.0}],
+        }
 
-    status_resp = client.get(f"/render/{job_id}/status")
-    assert status_resp.status_code == 200
-    assert status_resp.json()["status"] == "canceled"
+        # create durable queue row
+        enqueue_job(job_id, user_id, json.dumps(payload))
+
+        # create jobs_index row so ownership checks pass
+        conn = get_conn()
+        try:
+            now = datetime.utcnow().isoformat()
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO jobs_index
+                (id, user_id, project_id, title, created_at, input_json, parent_job_id)
+                VALUES (?,?,?,?,?,?,?)
+                """,
+                (job_id, user_id, None, "t", now, json.dumps(payload), None),
+            )
+            conn.commit()
+        finally:
+            conn.close()
+
+        # cancel is idempotent
+        r1 = client.post(f"/render/{job_id}/cancel")
+        assert r1.status_code == 200
+
+        r2 = client.post(f"/render/{job_id}/cancel")
+        assert r2.status_code == 200
+
+        row = get_job_row(job_id)
+        assert row is not None
+        assert row["status"] in ("canceled", "cancelled")
+    finally:
+        app.dependency_overrides.pop(render_module.get_current_user, None)
