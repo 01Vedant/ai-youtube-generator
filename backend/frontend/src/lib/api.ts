@@ -298,8 +298,8 @@ export async function postRender(payload: unknown): Promise<{ job_id: string }> 
 /**
  * Cancel a render job
  */
-export async function cancelRender(jobId: string): Promise<void> {
-  await fetchJson<void>(`/render/${jobId}/cancel`, {
+export async function cancelRender(jobId: string): Promise<{ ok?: boolean }> {
+  return fetchJson<{ ok?: boolean }>(`/render/${jobId}/cancel`, {
     method: 'POST',
   });
 }

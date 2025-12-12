@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { getRender, type RenderJob as ApiRenderJob } from '@/lib/api';
+import { cancelRender, getRender, type RenderJob as ApiRenderJob } from '@/lib/api';
 
 type Artifacts = { video?: string; audio?: string; thumbnail?: string } | null | undefined;
 type RenderJob = { id: string; status: ApiRenderJob['status']; artifacts?: Artifacts; error?: string | null };
@@ -9,6 +9,7 @@ export function RenderStatusPage(): JSX.Element {
   const { jobId } = useParams<{ jobId: string }>();
   const [job, setJob] = useState<RenderJob | null>(null);
   const [loading, setLoading] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const timer = useRef<number | null>(null);
 
@@ -60,6 +61,21 @@ export function RenderStatusPage(): JSX.Element {
   const isDone = job?.status === 'success';
   const isError = job?.status === 'error';
   const isCancelled = job?.status === 'cancelled';
+  const isCancelable = job?.status === 'queued' || job?.status === 'running';
+
+  const handleCancel = async (): Promise<void> => {
+    if (!jobId) return;
+    setCancelling(true);
+    try {
+      await cancelRender(jobId);
+      setJob((prev) => prev ? { ...prev, status: 'cancelled' } : { id: jobId, status: 'cancelled' as RenderJob['status'] });
+      await poll(jobId);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Failed to cancel render');
+    } finally {
+      setCancelling(false);
+    }
+  };
 
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-6">
@@ -85,6 +101,19 @@ export function RenderStatusPage(): JSX.Element {
             <div className="text-sm text-gray-500">Status</div>
             <div className="font-medium">{loading ? 'loading...' : job?.status ?? 'unknown'}</div>
           </div>
+
+          {isCancelable && (
+            <div>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={handleCancel}
+                disabled={cancelling}
+              >
+                {cancelling ? 'Cancelling...' : 'Cancel'}
+              </button>
+            </div>
+          )}
 
           {isCancelled && <div className="text-gray-600">This render was cancelled.</div>}
 
