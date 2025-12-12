@@ -300,7 +300,7 @@ export async function postRender(payload: unknown): Promise<{ job_id: string }> 
  */
 export async function cancelRender(jobId: string): Promise<void> {
   await fetchJson<void>(`/render/${jobId}/cancel`, {
-    method: 'DELETE',
+    method: 'POST',
   });
 }
 
@@ -822,7 +822,7 @@ export interface RenderArtifact {
 
 export interface RenderJob {
   id: string;
-  status: 'queued' | 'running' | 'success' | 'error';
+  status: 'queued' | 'running' | 'success' | 'error' | 'cancelled';
   artifacts?: RenderArtifact[];
   error?: string;
 }
@@ -840,6 +840,7 @@ export async function getRender(jobId: string): Promise<RenderJob> {
     running: 'running',
     completed: 'success',
     failed: 'error',
+    cancelled: 'cancelled',
   };
 
   const toArtifact = (type: string, url: string, meta?: unknown): RenderArtifact => {
@@ -864,8 +865,8 @@ export async function getRender(jobId: string): Promise<RenderJob> {
   }
 
   const error =
-    status.status === 'failed'
-      ? status.error?.message || status.legacy_error || status.error?.code || 'Render failed'
+    status.status === 'failed' || status.status === 'cancelled'
+      ? status.error?.message || status.legacy_error || status.error?.code || (status.status === 'cancelled' ? 'Render cancelled' : 'Render failed')
       : undefined;
 
   return {

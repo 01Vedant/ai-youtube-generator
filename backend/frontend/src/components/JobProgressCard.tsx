@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { getRender, RenderJob } from '../lib/api';
+import React, { useEffect, useRef, useState } from 'react';
+import { cancelRender, getRender, RenderJob } from '../lib/api';
 
 declare global {
   interface Window {
@@ -18,23 +18,34 @@ const POLL_INTERVAL = 1500;
 export const JobProgressCard: React.FC<JobProgressCardProps> = ({ jobId, onRetry, showHeader = true }: JobProgressCardProps) => {
   const [job, setJob] = useState<RenderJob | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [cancelling, setCancelling] = useState(false);
+  const [shouldPoll, setShouldPoll] = useState(true);
+  const pollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    setShouldPoll(true);
+  }, [jobId]);
+
+  useEffect(() => {
+    if (!jobId || !shouldPoll) return;
     let active = true;
-    let pollTimer: ReturnType<typeof setTimeout> | undefined;
     const poll = async () => {
       try {
         const res = await getRender(jobId);
         if (!active) return;
         setJob(res);
-        setJob(res);
         if (res.status === 'success') {
           window.__track?.('render_success', { job_id: jobId });
         } else if (res.status === 'error') {
           window.__track?.('render_error', { job_id: jobId });
-        } else {
-          pollTimer = setTimeout(poll, POLL_INTERVAL);
+        } else if (res.status === 'cancelled') {
+          window.__track?.('render_cancelled', { job_id: jobId });
         }
+        if (res.status === 'success' || res.status === 'error' || res.status === 'cancelled') {
+          setShouldPoll(false);
+          return;
+        }
+        pollTimer.current = setTimeout(poll, POLL_INTERVAL);
       } catch (e: any) {
         if (e.message?.includes('404')) {
           setError('This job was not found');
@@ -47,9 +58,30 @@ export const JobProgressCard: React.FC<JobProgressCardProps> = ({ jobId, onRetry
     poll();
     return () => {
       active = false;
-      if (pollTimer) clearTimeout(pollTimer);
+      if (pollTimer.current) {
+        clearTimeout(pollTimer.current);
+        pollTimer.current = null;
+      }
     };
-  }, [jobId]);
+  }, [jobId, shouldPoll]);
+
+  const handleCancel = async () => {
+    setCancelling(true);
+    try {
+      await cancelRender(jobId);
+      setJob((prev) => prev ? { ...prev, status: 'cancelled' } : { id: jobId, status: 'cancelled' as RenderJob['status'] });
+      setShouldPoll(false);
+      setError(null);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to cancel job');
+    } finally {
+      setCancelling(false);
+      if (pollTimer.current) {
+        clearTimeout(pollTimer.current);
+        pollTimer.current = null;
+      }
+    }
+  };
 
   if (error) {
     return (
@@ -66,6 +98,7 @@ export const JobProgressCard: React.FC<JobProgressCardProps> = ({ jobId, onRetry
       {showHeader && <h3>Render Status: {job.status}</h3>}
       {job.status === 'queued' && <p>Queued...</p>}
       {job.status === 'running' && <p>Rendering... <span className="spinner" /></p>}
+      {job.status === 'cancelled' && <p>Render cancelled.</p>}
       {job.status === 'success' && (
         <div>
           {job.artifacts && Array.isArray(job.artifacts) ? (() => {
@@ -104,6 +137,13 @@ export const JobProgressCard: React.FC<JobProgressCardProps> = ({ jobId, onRetry
         <div>
           <p>Render failed.</p>
           <button onClick={onRetry}>Retry</button>
+        </div>
+      )}
+      {(job.status === 'queued' || job.status === 'running') && (
+        <div style={{ marginTop: 12 }}>
+          <button className="btn-secondary" onClick={handleCancel} disabled={cancelling}>
+            {cancelling ? 'Cancelling...' : 'Cancel Render'}
+          </button>
         </div>
       )}
     </div>

@@ -5,7 +5,7 @@ import time
 import logging
 from typing import Optional, Dict, Any
 
-from .db import lease_next, renew_lease, requeue_stale, mark_completed, mark_failed, mark_running
+from .db import lease_next, renew_lease, requeue_stale, mark_completed, mark_failed, mark_running, get_job_row
 from .settings import OUTPUT_ROOT
 from .artifacts_storage.factory import get_storage
 
@@ -47,6 +47,18 @@ def process_once(sleep_when_empty: float = 0.2, heartbeat_sec: int = 10) -> bool
     payload = json.loads(job["payload"]) if isinstance(job["payload"], str) else job["payload"]
     try:
         mark_running(job_id)
+        # Skip already-cancelled jobs
+        try:
+            row = get_job_row(job_id)
+            if row and row.get("status") == "cancelled":
+                try:
+                    from app.logs.activity import log_event
+                    log_event(job_id, "job_cancelled", "Skipped cancelled job")
+                except Exception:
+                    pass
+                return True
+        except Exception:
+            pass
         # Activity log
         try:
             from app.logs.activity import log_event
@@ -75,6 +87,17 @@ def process_once(sleep_when_empty: float = 0.2, heartbeat_sec: int = 10) -> bool
         try:
             now2 = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
             renew_lease(job_id, WORKER_ID, now2)
+        except Exception:
+            pass
+        try:
+            row_after = get_job_row(job_id)
+            if row_after and row_after.get("status") == "cancelled":
+                try:
+                    from app.logs.activity import log_event
+                    log_event(job_id, "job_cancelled", "Job marked cancelled during processing")
+                except Exception:
+                    pass
+                return True
         except Exception:
             pass
         if summary.get("state") == "error":

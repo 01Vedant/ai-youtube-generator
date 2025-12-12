@@ -38,7 +38,7 @@ export function RenderStatusPage(): JSX.Element {
         })(),
       });
       setErr(null);
-      if (res.status === 'success' || res.status === 'error') {
+      if (res.status === 'success' || res.status === 'error' || res.status === 'cancelled') {
         stopPolling();
       }
     } catch (e) {
@@ -59,6 +59,7 @@ export function RenderStatusPage(): JSX.Element {
   const artifacts = job?.artifacts;
   const isDone = job?.status === 'success';
   const isError = job?.status === 'error';
+  const isCancelled = job?.status === 'cancelled';
 
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-6">
@@ -84,6 +85,8 @@ export function RenderStatusPage(): JSX.Element {
             <div className="text-sm text-gray-500">Status</div>
             <div className="font-medium">{loading ? 'loading...' : job?.status ?? 'unknown'}</div>
           </div>
+
+          {isCancelled && <div className="text-gray-600">This render was cancelled.</div>}
 
           {isError && <div className="text-red-600">{job?.error || 'Render failed'}</div>}
 

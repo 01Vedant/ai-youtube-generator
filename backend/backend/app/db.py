@@ -467,6 +467,24 @@ def mark_failed(job_id: str, code: str, msg: str, worker_id: Optional[str] = Non
     finally:
         conn.close()
 
+def mark_cancelled(job_id: str, worker_id: Optional[str] = None, reason: str | None = None) -> None:
+    conn = get_conn()
+    try:
+        now = _utcnow_iso()
+        if worker_id is not None:
+            conn.execute(
+                "UPDATE job_queue SET status='cancelled', finished_at=?, updated_at=?, err_code=?, err_message=? WHERE id=? AND lock_token=?",
+                (now, now, "CANCELLED", reason, job_id, worker_id),
+            )
+        else:
+            conn.execute(
+                "UPDATE job_queue SET status='cancelled', finished_at=?, updated_at=?, err_code=?, err_message=? WHERE id=?",
+                (now, now, "CANCELLED", reason, job_id),
+            )
+        conn.commit()
+    finally:
+        conn.close()
+
 
 def get_job_row(job_id: str) -> dict | None:
     conn = get_conn()
