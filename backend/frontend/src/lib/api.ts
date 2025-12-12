@@ -852,11 +852,14 @@ export async function getRender(jobId: string): Promise<RenderJob> {
 
   if (status.status === 'completed' && status.artifacts) {
     const entries = Object.entries(status.artifacts).filter(([, url]) => typeof url === 'string' && url.length > 0);
-    artifacts = entries.map(([type, url]) => toArtifact(type, url));
+    artifacts = entries.map(([type, url]: [string, unknown]) => toArtifact(type, String(url)));
   } else if (status.assets?.length) {
     const mapped = status.assets
-      .filter((asset) => typeof asset?.url === 'string' && !!asset.url)
-      .map((asset) => toArtifact(String(asset.type ?? 'json'), String(asset.url), asset));
+      .filter((asset: { url?: unknown; type?: unknown; [k: string]: unknown }) => typeof asset?.url === 'string' && !!asset.url)
+      .map((asset: { url?: unknown; type?: unknown; [k: string]: unknown }) =>
+  toArtifact(String(asset.type ?? 'json'), String(asset.url), asset)
+);
+
     artifacts = mapped.length ? mapped : undefined;
   }
 
