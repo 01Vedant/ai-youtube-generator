@@ -7,3 +7,7 @@ pytest~=8.3
 pytest-asyncio~=0.23
 python-multipart~=0.0.9
 requests~=2.32
+
+passlib[bcrypt]>=1.7.4
+PyJWT>=2.8.0
+
