@@ -1,11 +1,26 @@
 from __future__ import annotations
 
 import os
-from typing import Optional
+from typing import TYPE_CHECKING, Any, Optional
 
-import boto3
-from botocore.client import BaseClient
-from botocore.exceptions import ClientError
+MISSING_BOTO3_MSG = "S3 storage selected but boto3 is not installed. Install boto3 or switch to FS storage."
+
+if TYPE_CHECKING:
+    from botocore.client import BaseClient
+    from botocore.exceptions import ClientError
+else:
+    BaseClient = Any
+    ClientError = Exception
+
+
+def _load_boto3():
+    try:
+        import boto3  # type: ignore
+        from botocore.client import BaseClient as BotoBaseClient
+        from botocore.exceptions import ClientError as BotoClientError
+    except ImportError as e:
+        raise RuntimeError(MISSING_BOTO3_MSG) from e
+    return boto3, BotoBaseClient, BotoClientError
 
 
 class S3Storage:
@@ -23,6 +38,9 @@ class S3Storage:
         sk = secret_key or os.getenv("STORAGE_SECRET_KEY")
         region_name = region or os.getenv("STORAGE_REGION")
 
+        boto3, _, client_error_cls = _load_boto3()
+        self._client_error = client_error_cls
+
         # Build client for S3/MinIO
         session = boto3.session.Session()
         self.client: BaseClient = session.client(
@@ -37,7 +55,7 @@ class S3Storage:
         try:
             self.client.head_object(Bucket=self.bucket, Key=key)
             return True
-        except ClientError as e:
+        except self._client_error as e:
             code = e.response.get("Error", {}).get("Code")
             if code in ("404", "NoSuchKey"):
                 return False
@@ -69,6 +87,6 @@ class S3Storage:
     def delete(self, key: str) -> None:
         try:
             self.client.delete_object(Bucket=self.bucket, Key=key)
-        except ClientError:
+        except self._client_error:
             # silent on missing or errors
             pass
