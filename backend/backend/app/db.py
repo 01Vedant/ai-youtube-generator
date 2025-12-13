@@ -49,6 +49,11 @@ def init_db() -> None:
             )
             """
         )
+        try:
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_shares_job_id ON shares(job_id)")
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_shares_user_id ON shares(user_id)")
+        except sqlite3.OperationalError:
+            pass
         # Feedback table migration
         conn.executescript(
             """
@@ -81,19 +86,13 @@ def init_db() -> None:
             cols = [row[1] for row in cur.fetchall()]
             return column not in cols
 
-        try:
-            conn.execute("CREATE INDEX IF NOT EXISTS idx_shares_job_id ON shares(job_id)")
-            conn.execute("CREATE INDEX IF NOT EXISTS idx_shares_user_id ON shares(user_id)")
-        except sqlite3.OperationalError:
-            pass
-
         def job_queue_missing_canceled() -> bool:
             try:
                 row = conn.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='job_queue'").fetchone()
                 if not row or not row["sql"]:
                     return True
                 sql = (row["sql"] or "").lower()
-                return ("canceled" not in sql) and ("cancelled" not in sql)
+                return ("canceled" not in sql) or ("cancelled" not in sql)
             except Exception:
                 return True
 

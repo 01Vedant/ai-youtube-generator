@@ -28,3 +28,9 @@ Thumbs.db
 # Editor backups
 *.bak
 
+
+# Local SQLite DB
+backend/backend/data/app.db
+backend/backend/data/*.db
+backend/backend/data/*.db-*
+
