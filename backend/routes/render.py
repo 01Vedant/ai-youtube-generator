@@ -15,17 +15,12 @@ from datetime import datetime
 from fastapi import APIRouter, HTTPException, Request, Depends
 from pydantic import BaseModel, Field, ValidationError, field_validator
 from fastapi import Query
-
-# Import OUTPUT_ROOT from settings
-PLATFORM_ROOT = Path(__file__).resolve().parents[1]
-if str(PLATFORM_ROOT) not in sys.path:
-    sys.path.insert(0, str(PLATFORM_ROOT))
-from backend.app.settings import OUTPUT_ROOT
-from backend.app.artifacts_storage.factory import get_storage
-from backend.app.logs.activity import log_event
-from backend.app.auth.security import get_current_user
-from backend.app.usage.service import check_quota_or_raise, inc_renders
-from backend.app.db import get_conn, enqueue_job, get_job_row, mark_cancelled
+from backend.backend.app.settings import OUTPUT_ROOT
+from backend.backend.app.artifacts_storage.factory import get_storage
+from backend.backend.app.logs.activity import log_event
+from backend.backend.app.auth.security import get_current_user
+from backend.backend.app.usage.service import check_quota_or_raise, inc_renders
+from backend.backend.app.db import get_conn, enqueue_job, get_job_row, mark_cancelled
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/render", tags=["render"])
@@ -513,6 +508,31 @@ def _load_base_plan(job_id: str) -> Optional[dict]:
     return None
 
 
+def _get_job_owner(job_id: str) -> str:
+    """Return job owner user_id, or empty string if anonymous/unknown."""
+    try:
+        conn = get_conn()
+        try:
+            owner_row = conn.execute("SELECT user_id FROM jobs_index WHERE id = ?", (job_id,)).fetchone()
+        finally:
+            conn.close()
+        if owner_row:
+            return owner_row["user_id"] or ""
+    except Exception:
+        pass
+
+    try:
+        qrow = get_job_row(job_id)
+        if qrow:
+            user_id = qrow.get("user_id")
+            if user_id is not None:
+                return user_id or ""
+    except Exception:
+        pass
+
+    return ""
+
+
 # ==============================================================================
 # API Endpoints
 # ==============================================================================
@@ -619,24 +639,16 @@ def get_render_status(job_id: str, user=Depends(get_current_user)):
         - 404: Job not found
     """
     try:
-        # Ownership enforcement: job must belong to requesting user
+        qrow = get_job_row(job_id)
         if not user:
-            raise HTTPException(status_code=401, detail="Unauthorized")
-        try:
-            conn = get_conn()
-            try:
-                owner = conn.execute("SELECT user_id FROM jobs_index WHERE id = ?", (job_id,)).fetchone()
-            finally:
-                conn.close()
-            if owner and owner["user_id"] != user["id"]:
+            if not (qrow and (qrow.get("user_id") == "")):
+                raise HTTPException(status_code=401, detail="Unauthorized")
+        else:
+            owner_id = _get_job_owner(job_id)
+            if owner_id and owner_id != user["id"]:
                 raise HTTPException(status_code=403, detail="Forbidden")
-        except HTTPException:
-            raise
-        except Exception:
-            pass
 
         # First, check durable queue status
-        qrow = get_job_row(job_id)
         if qrow:
             qstatus = qrow["status"]
             if qstatus in ("queued", "running"):
@@ -691,7 +703,7 @@ def get_job_activity(job_id: str, limit: int = Query(default=100, ge=1, le=1000)
         - 500: Error reading events
     """
     try:
-        from backend.app.logs.activity import read_events
+        from backend.backend.app.logs.activity import read_events
         events = read_events(job_id, limit)
         return {"events": events}
     
@@ -844,41 +856,35 @@ def regenerate_job(job_id: str, overrides: Optional[RegenerateOverrides] = None,
 def cancel_render(job_id: str, user=Depends(get_current_user)):
     """Cancel a queued/running render job."""
     # Auth + ownership
-    if not user:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    try:
-        conn = get_conn()
-        try:
-            owner = conn.execute("SELECT user_id FROM jobs_index WHERE id = ?", (job_id,)).fetchone()
-        finally:
-            conn.close()
-        if not owner:
-            raise HTTPException(status_code=404, detail="Job not found")
-        if owner["user_id"] != user["id"]:
-            raise HTTPException(status_code=403, detail="Forbidden")
-    except HTTPException:
-        raise
-    except Exception:
-        # ownership unknown, continue best-effort
-        pass
-
     qrow = get_job_row(job_id)
+    if not user:
+        if not (qrow and (qrow.get("user_id") == "")):
+            raise HTTPException(status_code=401, detail="Unauthorized")
+    else:
+        owner_id = _get_job_owner(job_id)
+        if owner_id and owner_id != user["id"]:
+            raise HTTPException(status_code=403, detail="Forbidden")
+
     if not qrow:
         fallback_status = get_status(job_id)
         if fallback_status:
             state = str(fallback_status.get("state") or "").lower()
-            if state in {"success", "completed", "error", "failed", "cancelled"}:
+            if state in {"cancelled", "canceled"}:
+                return {"status": "canceled", "job_id": job_id, "already": True}
+            if state in {"success", "completed", "error", "failed"}:
                 raise HTTPException(status_code=409, detail=f"Job is already {state}")
         raise HTTPException(status_code=404, detail="Job not found")
 
     status = qrow.get("status")
+    if status in ("cancelled", "canceled"):
+        return {"status": "canceled", "job_id": job_id, "already": True}
     if status not in ("queued", "running"):
         raise HTTPException(status_code=409, detail=f"Job is already {status or 'completed'}")
 
     mark_cancelled(job_id, reason="user_cancel")
     set_status(job_id, state="canceled", step="cancelled", progress_pct=qrow.get("progress_pct"))
     try:
-        log_event(job_id, "job_cancelled", "User cancelled render", {"user_id": user["id"]})
+        log_event(job_id, "job_cancelled", "User cancelled render", {"user_id": user["id"] if user else ""})
     except Exception:
         pass
     return {"ok": True, "job_id": job_id, "status": "canceled"}

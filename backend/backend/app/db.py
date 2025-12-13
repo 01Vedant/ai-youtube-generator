@@ -17,6 +17,38 @@ def get_conn() -> sqlite3.Connection:
 def init_db() -> None:
     conn = get_conn()
     try:
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS job_queue (
+                id TEXT PRIMARY KEY,
+                user_id TEXT,
+                payload TEXT NOT NULL,
+                status TEXT CHECK(status IN ('queued','running','completed','failed','canceled','cancelled')) NOT NULL DEFAULT 'queued',
+                err_code TEXT,
+                err_message TEXT,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                started_at TEXT,
+                finished_at TEXT,
+                lock_token TEXT,
+                heartbeat_at TEXT
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS shares (
+                share_id TEXT PRIMARY KEY,
+                job_id TEXT,
+                user_id TEXT,
+                artifact_url TEXT,
+                title TEXT,
+                description TEXT,
+                created_at TEXT,
+                revoked INTEGER NOT NULL DEFAULT 0
+            )
+            """
+        )
         # Feedback table migration
         conn.executescript(
             """
@@ -30,8 +62,6 @@ def init_db() -> None:
             CREATE INDEX IF NOT EXISTS idx_user_feedback_created ON user_feedback(created_at DESC);
             """
         )
-        conn.execute("CREATE INDEX IF NOT EXISTS idx_shares_job_id ON shares(job_id)")
-        conn.execute("CREATE INDEX IF NOT EXISTS idx_shares_user_id ON shares(user_id)")
         # Billing table
         conn.execute(
             """
@@ -50,6 +80,53 @@ def init_db() -> None:
             cur = conn.execute(f"PRAGMA table_info({table})")
             cols = [row[1] for row in cur.fetchall()]
             return column not in cols
+
+        try:
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_shares_job_id ON shares(job_id)")
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_shares_user_id ON shares(user_id)")
+        except sqlite3.OperationalError:
+            pass
+
+        def job_queue_missing_canceled() -> bool:
+            try:
+                row = conn.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='job_queue'").fetchone()
+                if not row or not row["sql"]:
+                    return True
+                sql = (row["sql"] or "").lower()
+                return ("canceled" not in sql) and ("cancelled" not in sql)
+            except Exception:
+                return True
+
+        def rebuild_job_queue_with_canceled():
+            try:
+                conn.execute("ALTER TABLE job_queue RENAME TO job_queue_old")
+                conn.execute(
+                    """
+                    CREATE TABLE job_queue (
+                        id TEXT PRIMARY KEY,
+                        user_id TEXT,
+                        payload TEXT NOT NULL,
+                        status TEXT CHECK(status IN ('queued','running','completed','failed','canceled','cancelled')) NOT NULL DEFAULT 'queued',
+                        err_code TEXT,
+                        err_message TEXT,
+                        created_at TEXT NOT NULL,
+                        updated_at TEXT NOT NULL,
+                        started_at TEXT,
+                        finished_at TEXT,
+                        lock_token TEXT,
+                        heartbeat_at TEXT
+                    )
+                    """
+                )
+                cols = (
+                    "id, user_id, payload, status, err_code, err_message, created_at, updated_at, "
+                    "started_at, finished_at, lock_token, heartbeat_at"
+                )
+                conn.execute(f"INSERT INTO job_queue ({cols}) SELECT {cols} FROM job_queue_old")
+                conn.execute("DROP TABLE job_queue_old")
+                conn.commit()
+            except Exception:
+                pass
 
         # Ensure jobs_index has user_id
         try:
@@ -109,6 +186,11 @@ def init_db() -> None:
         try:
             if column_missing('job_queue', 'heartbeat_at'):
                 conn.execute("ALTER TABLE job_queue ADD COLUMN heartbeat_at TEXT")
+        except Exception:
+            pass
+        try:
+            if job_queue_missing_canceled():
+                rebuild_job_queue_with_canceled()
         except Exception:
             pass
         # Ensure templates has inputs_schema column
