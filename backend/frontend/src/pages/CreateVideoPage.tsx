@@ -2,19 +2,26 @@
 import { runPreflight, type PreflightResponse } from "../api/preflight";
 import { PreflightStatusPill } from "@/components/PreflightStatusPill";
 import { useLocation, useNavigate } from 'react-router-dom';
-import { startRender, startSimpleRender, ttsPreview, listProjects, assignToProject, sendOnboardingEvent } from '../lib/api';
+import { startRender, startSimpleRender, ttsPreview, listProjects, assignToProject, sendOnboardingEvent, getPresets } from '../lib/api';
 import type { Project } from '@/types/projects';
 import { toast } from '../lib/toast';
 import type { RenderPlan, SceneInput } from '../types/api';
 import { TemplatesPanel } from '../components/TemplatesPanel';
 import './CreateVideoPage.css';
-import { presets, presetToPlan } from '@/lib/presets';
+import { presets as templatePresets, presetToPlan } from '@/lib/presets';
+import type { Preset as TemplatePreset } from '@/lib/presets';
 import { getPrefs, savePrefs } from '@/lib/userPrefs';
 import { UsageBadge } from '@/components/UsageBadge';
 
 export const CreateVideoPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const isTemplatePreset = (p: unknown): p is TemplatePreset =>
+    !!p &&
+    typeof p === 'object' &&
+    'template' in (p as Record<string, unknown>) &&
+    'voice_id' in (p as Record<string, unknown>) &&
+    'scenes' in (p as Record<string, unknown>);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [draftShown, setDraftShown] = useState(false);
@@ -28,8 +35,11 @@ export const CreateVideoPage: React.FC = () => {
   const [simpleDuration, setSimpleDuration] = useState<number>(60);
   const [simpleStyle, setSimpleStyle] = useState<string>('calm temple');
   const [simpleLanguage, setSimpleLanguage] = useState<'hi' | 'en'>('hi');
+  type ChannelPreset = { id: string; name: string; default_voice?: 'F' | 'M' };
   const [simpleLoading, setSimpleLoading] = useState(false);
   const [simpleError, setSimpleError] = useState<string | null>(null);
+  const [channelPresets, setChannelPresets] = useState<ChannelPreset[]>([]);
+  const [selectedPresetId, setSelectedPresetId] = useState<string>('');
   const SIMPLE_KEY = 'simple_mode_settings_v1';
 
   // Preflight (backend readiness checks)
@@ -97,6 +107,23 @@ export const CreateVideoPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    (async () => {
+      try {
+        const res = await getPresets();
+        const list = res.presets || [];
+        setChannelPresets(list as ChannelPreset[]);
+        if (list.length > 0) {
+          setSelectedPresetId(list[0].id);
+          if (!simpleTopic) setSimpleTopic(list[0].name);
+          if (list[0].default_voice) setSimpleVoice(list[0].default_voice);
+        }
+      } catch {
+        setChannelPresets([]);
+      }
+    })();
+  }, [simpleTopic]);
+
+  useEffect(() => {
     try {
       const saved = localStorage.getItem(SIMPLE_KEY);
       if (saved) {
@@ -106,6 +133,7 @@ export const CreateVideoPage: React.FC = () => {
         setSimpleDuration(typeof parsed.duration_sec === 'number' ? parsed.duration_sec : 60);
         setSimpleStyle(typeof parsed.style === 'string' ? parsed.style : 'calm temple');
         setSimpleLanguage(parsed.language === 'en' ? 'en' : 'hi');
+        if (parsed.preset_id) setSelectedPresetId(parsed.preset_id);
       }
     } catch {
       // ignore
@@ -120,6 +148,7 @@ export const CreateVideoPage: React.FC = () => {
         duration_sec: simpleDuration,
         style: simpleStyle,
         language: simpleLanguage,
+        preset_id: selectedPresetId,
       };
       localStorage.setItem(SIMPLE_KEY, JSON.stringify(payload));
     } catch {
@@ -142,6 +171,7 @@ export const CreateVideoPage: React.FC = () => {
         voice: simpleVoice,
         style: simpleStyle,
         language: simpleLanguage,
+        preset_id: selectedPresetId || undefined,
       });
       toast.success(`Video job created! ID: ${response.job_id}`);
       navigate(`/renders/${response.job_id}`);
@@ -379,16 +409,22 @@ export const CreateVideoPage: React.FC = () => {
               <label htmlFor="preset">Presets</label>
               <select id="preset" onChange={(e) => {
                 const pid = e.target.value;
-                const p = presets.find(x => x.id === pid);
+                const p = templatePresets.find(x => x.id === pid) as TemplatePreset | ChannelPreset | undefined;
                 if (!p) return;
-                const plan = presetToPlan(p, formData.topic || 'Bhakti Video');
-                setFormData(plan);
-                setTtsPreviewUrls({});
-                toast.info(`Applied preset '${p.name}'`);
-                savePrefs({ template: p.template, voice_id: p.voice_id });
+                if (isTemplatePreset(p)) {
+                  const plan = presetToPlan(p, formData.topic || 'Bhakti Video');
+                  setFormData(plan);
+                  setTtsPreviewUrls({});
+                  toast.info(`Applied preset '${p.name}'`);
+                  savePrefs({ template: p.template, voice_id: p.voice_id });
+                } else {
+                  setSelectedPresetId(p.id);
+                  if (p.default_voice) setSimpleVoice(p.default_voice);
+                  toast.info(`Preset selected: ${p.name}`);
+                }
               }}>
                 <option value="">(None)</option>
-                {presets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                {templatePresets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             </div>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
@@ -421,6 +457,28 @@ export const CreateVideoPage: React.FC = () => {
           <section className="form-section">
             <h2>Simple Mode</h2>
             <p className="form-help">Generate a storyboard automatically and render without editing scenes.</p>
+            {channelPresets.length > 0 && (
+              <div className="form-group" style={{ maxWidth: 260 }}>
+                <label htmlFor="simple-preset">Channel Preset</label>
+                <select
+                  id="simple-preset"
+                  value={selectedPresetId}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                    const pid = e.target.value;
+                    setSelectedPresetId(pid);
+                    const p = channelPresets.find((x) => x.id === pid);
+                    if (p?.default_voice) {
+                      setSimpleVoice(p.default_voice);
+                    }
+                  }}
+                  aria-label="Select preset"
+                >
+                  {channelPresets.map((p) => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div className="form-group">
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                 {[
