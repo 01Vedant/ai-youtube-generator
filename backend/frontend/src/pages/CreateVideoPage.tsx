@@ -575,6 +575,7 @@ export const CreateVideoPage: React.FC = () => {
               <button
                 type="button"
                 className="btn-primary"
+                data-testid="simple-generate-render"
                 onClick={handleSimpleGenerate}
                 disabled={simpleLoading || !simpleTopic.trim()}
               >
