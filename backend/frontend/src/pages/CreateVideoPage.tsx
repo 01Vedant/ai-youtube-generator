@@ -2,7 +2,7 @@
 import { runPreflight, type PreflightResponse } from "../api/preflight";
 import { PreflightStatusPill } from "@/components/PreflightStatusPill";
 import { useLocation, useNavigate } from 'react-router-dom';
-import { startRender, submitRender, ttsPreview, listProjects, assignToProject, sendOnboardingEvent, generateStoryboard } from '../lib/api';
+import { startRender, startSimpleRender, ttsPreview, listProjects, assignToProject, sendOnboardingEvent } from '../lib/api';
 import type { Project } from '@/types/projects';
 import { toast } from '../lib/toast';
 import type { RenderPlan, SceneInput } from '../types/api';
@@ -136,14 +136,13 @@ export const CreateVideoPage: React.FC = () => {
     setSimpleLoading(true);
     setSimpleError(null);
     try {
-      const plan = await generateStoryboard({
+      const response = await startSimpleRender({
         topic: simpleTopic.trim(),
         duration_sec: simpleDuration || undefined,
         voice: simpleVoice,
         style: simpleStyle,
         language: simpleLanguage,
       });
-      const response = await submitRender(plan);
       toast.success(`Video job created! ID: ${response.job_id}`);
       navigate(`/renders/${response.job_id}`);
     } catch (err) {

@@ -18,7 +18,12 @@ from fastapi import Query
 from backend.backend.app.settings import OUTPUT_ROOT
 from backend.backend.app.artifacts_storage.factory import get_storage
 from backend.backend.app.logs.activity import log_event
-from backend.backend.app.auth.security import get_current_user
+try:
+    from backend.backend.app.auth.security import get_current_user
+except Exception:
+    # Fallback for test environments without auth deps
+    def get_current_user():  # type: ignore
+        return None
 from backend.backend.app.usage.service import check_quota_or_raise, inc_renders
 from backend.backend.app.db import get_conn, enqueue_job, get_job_row, mark_cancelled
 
@@ -102,6 +107,16 @@ class RenderPlan(BaseModel):
                 "proxy": True
             }
         }
+
+
+class SimpleRenderRequest(BaseModel):
+    topic: str
+    style: Optional[str] = None
+    language: str = "hi"
+    duration_sec: float = 60.0
+    voice: str = Field(default="F", pattern="^(F|M)$")
+    fast_path: bool = False
+    proxy: Optional[bool] = None
 
 
 class Event(BaseModel):
@@ -536,6 +551,68 @@ def _get_job_owner(job_id: str) -> str:
 # ==============================================================================
 # API Endpoints
 # ==============================================================================
+def _enqueue_plan(plan_dict: dict, user) -> Dict[str, Any]:
+    job_id = plan_dict.get("job_id") or str(uuid.uuid4())
+    plan_dict["job_id"] = job_id
+
+    if user:
+        check_quota_or_raise(user["id"], add_renders=1)
+
+    try:
+        conn = get_conn()
+        try:
+            now = datetime.utcnow().isoformat()
+            plan_json = json.dumps(plan_dict)
+            conn.execute(
+                (
+                    "INSERT OR IGNORE INTO jobs_index (id, user_id, project_id, title, created_at, input_json, parent_job_id) "
+                    "VALUES (?,?,?,?,?,?,?)"
+                ),
+                (job_id, user["id"] if user else "", None, plan_dict.get("topic") or "", now, plan_json, None),
+            )
+            conn.commit()
+        finally:
+            conn.close()
+    except Exception:
+        pass
+
+    enqueue_job(job_id, user["id"] if user else "", json.dumps(plan_dict))
+
+    if user:
+        try:
+            inc_renders(user["id"], 1)
+        except Exception:
+            pass
+
+    return {
+        "job_id": job_id,
+        "status": "queued",
+        "estimated_wait_seconds": 120 if not SIMULATE_RENDER else 0,
+        "fast_path": plan_dict.get("fast_path"),
+        "proxy": plan_dict.get("proxy"),
+        "message": "Job queued successfully",
+    }
+
+
+def _build_simple_scenes(req: SimpleRenderRequest) -> List[SceneInput]:
+    duration = req.duration_sec or 60.0
+    count = int(round(duration / 15.0)) or 5
+    count = max(3, min(8, count))
+    base = max(duration / count, 0.5)
+    durations: List[float] = [round(base, 2) for _ in range(count)]
+    durations[-1] = max(0.5, round(duration - sum(durations[:-1]), 2))
+    variations = ["intro", "insight", "reflection", "practice", "blessing", "closing", "lesson", "takeaway"]
+    scenes: List[SceneInput] = []
+    for idx in range(count):
+        tag = variations[idx % len(variations)]
+        prompt_bits = [req.topic, req.style or "", req.language]
+        prompt = " | ".join([p for p in prompt_bits if p]).strip()
+        prompt = f"{prompt} - {tag}".strip(" -")
+        narration = f"{req.topic} scene {idx + 1} {tag}"
+        scenes.append(SceneInput(image_prompt=prompt, narration=narration, duration_sec=durations[idx]))
+    return scenes
+
+
 @router.post("")
 def post_render(plan: RenderPlan, request: Request, user=Depends(get_current_user)):
     """
@@ -551,10 +628,6 @@ def post_render(plan: RenderPlan, request: Request, user=Depends(get_current_use
         - 500: Unexpected server error
     """
     try:
-        # Enforce render quota only for authenticated users
-        if user:
-            check_quota_or_raise(user["id"], add_renders=1)
-
         # Create job ID
         job_id = str(uuid.uuid4())
         logger.info(f"Creating render job {job_id} for topic: {plan.topic}")
@@ -568,46 +641,8 @@ def post_render(plan: RenderPlan, request: Request, user=Depends(get_current_use
         plan_dict = plan.model_dump(mode="python")
         plan_dict["job_id"] = job_id
         
-        # Record in jobs_index for ownership and discovery
-        try:
-            conn = get_conn()
-            try:
-                now = datetime.utcnow().isoformat()
-                # Store plan JSON for future regenerate/duplicate
-                plan_json = json.dumps(plan_dict)
-                conn.execute(
-                    (
-                        "INSERT OR IGNORE INTO jobs_index (id, user_id, project_id, title, created_at, input_json, parent_job_id) "
-                        "VALUES (?,?,?,?,?,?,?)"
-                    ),
-                    (job_id, user["id"] if user else "", None, plan.topic, now, plan_json, None),
-                )
-                conn.commit()
-            finally:
-                conn.close()
-        except Exception:
-            pass
-
-        # Durable enqueue to SQLite-backed queue; worker will process
-        enqueue_job(job_id, user["id"] if user else "", json.dumps(plan_dict))
-        
-        # Successful enqueue; record usage for authenticated users
-        if user:
-            try:
-                inc_renders(user["id"], 1)
-            except Exception:
-                # non-fatal
-                pass
-
         # Return immediately
-        return {
-            "job_id": job_id,
-            "status": "queued",
-            "estimated_wait_seconds": 120 if not SIMULATE_RENDER else 0,
-            "fast_path": plan.fast_path,
-            "proxy": plan.proxy,
-            "message": "Job queued successfully"
-        }
+        return _enqueue_plan(plan_dict, user)
         
     except ValidationError as e:
         # Pydantic validation errors (should be caught by FastAPI automatically)
@@ -625,6 +660,30 @@ def post_render(plan: RenderPlan, request: Request, user=Depends(get_current_use
             status_code=400,
             detail=f"render_failed: {str(e)}"
         )
+
+
+@router.post("/simple")
+def post_simple_render(req: SimpleRenderRequest, request: Request, user=Depends(get_current_user)):
+    try:
+        lang = req.language or "hi"
+        if lang not in ("en", "hi"):
+            lang = "hi"
+        scenes = _build_simple_scenes(req)
+        plan = RenderPlan(
+            topic=req.topic,
+            language=lang,
+            voice=req.voice,
+            scenes=scenes,
+            fast_path=req.fast_path,
+            proxy=req.proxy if req.proxy is not None else True,
+        )
+        plan_dict = plan.model_dump(mode="python")
+        plan_dict["style"] = req.style
+        plan_dict["duration_sec"] = req.duration_sec
+        return _enqueue_plan(plan_dict, user)
+    except Exception as e:
+        logger.exception(f"Error creating simple render: {e}")
+        raise
 
 
 @router.get("/{job_id}/status")

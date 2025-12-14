@@ -158,6 +158,21 @@ export async function generateStoryboard(input: {
     body: JSON.stringify(input),
   });
 }
+
+export async function startSimpleRender(input: {
+  topic: string;
+  style?: string;
+  language?: string;
+  duration_sec?: number;
+  voice?: 'F' | 'M';
+  fast_path?: boolean;
+  proxy?: boolean;
+}): Promise<{ job_id: string }> {
+  return fetchJson<{ job_id: string }>('/render/simple', {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+}
 // Admin API
 
 export async function getAdminUsers(params: { page?: number; pageSize?: number; q?: string; sort?: string } = {}): Promise<AdminUsersRes> {
