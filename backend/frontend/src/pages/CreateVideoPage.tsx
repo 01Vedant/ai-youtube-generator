@@ -2,7 +2,7 @@
 import { runPreflight, type PreflightResponse } from "../api/preflight";
 import { PreflightStatusPill } from "@/components/PreflightStatusPill";
 import { useLocation, useNavigate } from 'react-router-dom';
-import { startRender, ttsPreview, listProjects, assignToProject, sendOnboardingEvent } from '../lib/api';
+import { startRender, submitRender, ttsPreview, listProjects, assignToProject, sendOnboardingEvent, generateStoryboard } from '../lib/api';
 import type { Project } from '@/types/projects';
 import { toast } from '../lib/toast';
 import type { RenderPlan, SceneInput } from '../types/api';
@@ -23,6 +23,11 @@ export const CreateVideoPage: React.FC = () => {
   const [previewLoading, setPreviewLoading] = useState<Record<number, boolean>>({});
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
+  const [simpleTopic, setSimpleTopic] = useState<string>('');
+  const [simpleVoice, setSimpleVoice] = useState<'F' | 'M'>('F');
+  const [simpleDuration, setSimpleDuration] = useState<number>(60);
+  const [simpleLoading, setSimpleLoading] = useState(false);
+  const [simpleError, setSimpleError] = useState<string | null>(null);
 
   // Preflight (backend readiness checks)
   const [preflight, setPreflight] = useState<PreflightResponse | null>(null);
@@ -87,6 +92,32 @@ export const CreateVideoPage: React.FC = () => {
       })),
     }));
   }, []);
+
+  const handleSimpleGenerate = async (): Promise<void> => {
+    if (!simpleTopic.trim()) {
+      toast.error('Please enter a topic');
+      return;
+    }
+
+    setSimpleLoading(true);
+    setSimpleError(null);
+    try {
+      const plan = await generateStoryboard({
+        topic: simpleTopic.trim(),
+        duration_sec: simpleDuration || undefined,
+        voice: simpleVoice,
+      });
+      const response = await submitRender(plan);
+      toast.success(`Video job created! ID: ${response.job_id}`);
+      navigate(`/renders/${response.job_id}`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to generate storyboard';
+      setSimpleError(message);
+      toast.error(message);
+    } finally {
+      setSimpleLoading(false);
+    }
+  };
   
   const handleResetToBlank = (): void => {
     setFormData({
@@ -264,7 +295,7 @@ export const CreateVideoPage: React.FC = () => {
       sendOnboardingEvent('rendered_first_video').catch(() => {});
       toast.success(`Video job created! ID: ${response.job_id}`);
       window.__track?.('render_start', { job_id: response.job_id });
-      navigate(`/render/${response.job_id}`);
+      navigate(`/renders/${response.job_id}`);
     } catch (err) {
       if ((err as any)?.code === 'QUOTA_EXCEEDED') {
         const q = (err as any).payload?.detail?.error;
@@ -337,6 +368,61 @@ export const CreateVideoPage: React.FC = () => {
         </section>
 
         <form onSubmit={handleSubmit} className="form">
+          {/* Simple Mode */}
+          <section className="form-section">
+            <h2>Simple Mode</h2>
+            <p className="form-help">Generate a storyboard automatically and render without editing scenes.</p>
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="simple-topic">Topic</label>
+                <input
+                  id="simple-topic"
+                  type="text"
+                  value={simpleTopic}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSimpleTopic(e.target.value)}
+                  placeholder="e.g., Morning meditation"
+                  aria-required="true"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="simple-voice">Voice</label>
+                <select
+                  id="simple-voice"
+                  value={simpleVoice}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSimpleVoice(e.target.value as 'F' | 'M')}
+                  aria-label="Select voice for simple mode"
+                >
+                  <option value="F">Female</option>
+                  <option value="M">Male</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="simple-duration">Duration (seconds)</label>
+                <input
+                  id="simple-duration"
+                  type="number"
+                  min={10}
+                  max={600}
+                  value={simpleDuration}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSimpleDuration(parseInt(e.target.value, 10) || 60)}
+                />
+              </div>
+            </div>
+            {simpleError && (
+              <div className="error-message" role="alert">
+                {simpleError}
+              </div>
+            )}
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={handleSimpleGenerate}
+              disabled={simpleLoading || !simpleTopic.trim()}
+            >
+              {simpleLoading ? 'Generating...' : 'Generate & Render'}
+            </button>
+          </section>
+
           {/* Basic Settings */}
           <section className="form-section">
             <h2>Video Settings</h2>
@@ -769,4 +855,3 @@ export const CreateVideoPage: React.FC = () => {
     </div>
   );
 };
-
