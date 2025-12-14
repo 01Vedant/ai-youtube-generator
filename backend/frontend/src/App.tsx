@@ -23,6 +23,7 @@ import TemplateEditorPage from '@/pages/TemplateEditorPage';
 import MarketplacePage from '@/pages/MarketplacePage';
 import LegalIndexPage from '@/pages/LegalIndexPage';
 import AdminFeedbackPage from './pages/AdminFeedbackPage';
+import { CreateVideoPage } from '@/pages/CreateVideoPage';
 import FeedbackButton from './components/FeedbackButton';
 import MaintenancePage from '@/pages/MaintenancePage';
 import LandingPage from '@/pages/LandingPage';
@@ -207,6 +208,7 @@ function AppRoutes(): JSX.Element {
             </RequireAuth>
           }
         />
+        <Route path="/create" element={<CreateVideoPage />} />
         <Route path="/marketplace" element={<MarketplacePage />} />
         <Route path="/legal" element={<LegalIndexPage />} />
         <Route path="/maintenance" element={<MaintenancePage />} />
