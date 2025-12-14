@@ -109,6 +109,7 @@ export function RenderStatusPage(): JSX.Element {
                 className="btn-secondary"
                 onClick={handleCancel}
                 disabled={cancelling}
+                data-testid="cancel-render"
               >
                 {cancelling ? 'Cancelling...' : 'Cancel'}
               </button>
