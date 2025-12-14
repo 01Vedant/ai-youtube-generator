@@ -34,3 +34,8 @@ backend/backend/data/app.db
 backend/backend/data/*.db
 backend/backend/data/*.db-*
 
+
+# Local sqlite db (never commit)
+backend/backend/data/app.db
+backend/backend/data/*.db
+
