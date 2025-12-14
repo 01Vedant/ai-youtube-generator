@@ -167,11 +167,16 @@ export async function startSimpleRender(input: {
   voice?: 'F' | 'M';
   fast_path?: boolean;
   proxy?: boolean;
+  preset_id?: string;
 }): Promise<{ job_id: string }> {
   return fetchJson<{ job_id: string }>('/render/simple', {
     method: 'POST',
     body: JSON.stringify(input),
   });
+}
+
+export async function getPresets(): Promise<{ presets: Array<{ id: string; name: string; description?: string; default_voice?: 'F' | 'M' }> }> {
+  return fetchJson('/presets');
 }
 // Admin API
 
