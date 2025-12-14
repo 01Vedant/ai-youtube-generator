@@ -26,8 +26,11 @@ export const CreateVideoPage: React.FC = () => {
   const [simpleTopic, setSimpleTopic] = useState<string>('');
   const [simpleVoice, setSimpleVoice] = useState<'F' | 'M'>('F');
   const [simpleDuration, setSimpleDuration] = useState<number>(60);
+  const [simpleStyle, setSimpleStyle] = useState<string>('calm temple');
+  const [simpleLanguage, setSimpleLanguage] = useState<'hi' | 'en'>('hi');
   const [simpleLoading, setSimpleLoading] = useState(false);
   const [simpleError, setSimpleError] = useState<string | null>(null);
+  const SIMPLE_KEY = 'simple_mode_settings_v1';
 
   // Preflight (backend readiness checks)
   const [preflight, setPreflight] = useState<PreflightResponse | null>(null);
@@ -93,6 +96,37 @@ export const CreateVideoPage: React.FC = () => {
     }));
   }, []);
 
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(SIMPLE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setSimpleTopic(parsed.topic ?? '');
+        setSimpleVoice(parsed.voice === 'M' ? 'M' : 'F');
+        setSimpleDuration(typeof parsed.duration_sec === 'number' ? parsed.duration_sec : 60);
+        setSimpleStyle(typeof parsed.style === 'string' ? parsed.style : 'calm temple');
+        setSimpleLanguage(parsed.language === 'en' ? 'en' : 'hi');
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      const payload = {
+        topic: simpleTopic,
+        voice: simpleVoice,
+        duration_sec: simpleDuration,
+        style: simpleStyle,
+        language: simpleLanguage,
+      };
+      localStorage.setItem(SIMPLE_KEY, JSON.stringify(payload));
+    } catch {
+      // ignore
+    }
+  }, [simpleTopic, simpleVoice, simpleDuration, simpleStyle, simpleLanguage]);
+
   const handleSimpleGenerate = async (): Promise<void> => {
     if (!simpleTopic.trim()) {
       toast.error('Please enter a topic');
@@ -106,6 +140,8 @@ export const CreateVideoPage: React.FC = () => {
         topic: simpleTopic.trim(),
         duration_sec: simpleDuration || undefined,
         voice: simpleVoice,
+        style: simpleStyle,
+        language: simpleLanguage,
       });
       const response = await submitRender(plan);
       toast.success(`Video job created! ID: ${response.job_id}`);
@@ -116,6 +152,20 @@ export const CreateVideoPage: React.FC = () => {
       toast.error(message);
     } finally {
       setSimpleLoading(false);
+    }
+  };
+
+  const handleSimpleReset = (): void => {
+    setSimpleTopic('');
+    setSimpleVoice('F');
+    setSimpleDuration(60);
+    setSimpleStyle('calm temple');
+    setSimpleLanguage('hi');
+    setSimpleError(null);
+    try {
+      localStorage.removeItem(SIMPLE_KEY);
+    } catch {
+      // ignore
     }
   };
   
@@ -372,6 +422,34 @@ export const CreateVideoPage: React.FC = () => {
           <section className="form-section">
             <h2>Simple Mode</h2>
             <p className="form-help">Generate a storyboard automatically and render without editing scenes.</p>
+            <div className="form-group">
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {[
+                  { label: 'Hanuman Chalisa (Hindi)', topic: 'Hanuman Chalisa', style: 'devotional, temple, calm', language: 'hi' as const, duration: 120, voice: 'M' as const },
+                  { label: 'Shiv Aarti (Hindi)', topic: 'Shiv Aarti', style: 'devotional, temple bells', language: 'hi' as const, duration: 90, voice: 'M' as const },
+                  { label: 'Krishna Bhajan (Hindi)', topic: 'Krishna Bhajan', style: 'flute, serene, vrindavan', language: 'hi' as const, duration: 90, voice: 'F' as const },
+                  { label: 'Durga Stuti (Hindi)', topic: 'Durga Stuti', style: 'powerful, festive, dhol', language: 'hi' as const, duration: 90, voice: 'F' as const },
+                  { label: 'Daily Motivation (English)', topic: 'Daily Motivation', style: 'modern, cinematic, uplifting', language: 'en' as const, duration: 60, voice: 'M' as const },
+                  { label: 'Kids Stories (English)', topic: 'Short Kids Story', style: 'bright, friendly, fun', language: 'en' as const, duration: 60, voice: 'F' as const },
+                ].map((preset) => (
+                  <button
+                    key={preset.label}
+                    type="button"
+                    className="btn-secondary"
+                    style={{ flex: '1 1 180px' }}
+                    onClick={() => {
+                      setSimpleTopic(preset.topic);
+                      setSimpleStyle(preset.style);
+                      setSimpleLanguage(preset.language);
+                      setSimpleDuration(preset.duration);
+                      setSimpleVoice(preset.voice);
+                    }}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="simple-topic">Topic</label>
@@ -383,6 +461,29 @@ export const CreateVideoPage: React.FC = () => {
                   placeholder="e.g., Morning meditation"
                   aria-required="true"
                 />
+              </div>
+              <div className="form-group">
+                <label htmlFor="simple-style">Style</label>
+                <input
+                  id="simple-style"
+                  type="text"
+                  value={simpleStyle}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSimpleStyle(e.target.value)}
+                  placeholder="calm temple"
+                  aria-label="Style for simple mode"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="simple-language">Language</label>
+                <select
+                  id="simple-language"
+                  value={simpleLanguage}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSimpleLanguage(e.target.value as 'hi' | 'en')}
+                  aria-label="Select language for simple mode"
+                >
+                  <option value="hi">Hindi</option>
+                  <option value="en">English</option>
+                </select>
               </div>
               <div className="form-group">
                 <label htmlFor="simple-voice">Voice</label>
@@ -413,14 +514,24 @@ export const CreateVideoPage: React.FC = () => {
                 {simpleError}
               </div>
             )}
-            <button
-              type="button"
-              className="btn-primary"
-              onClick={handleSimpleGenerate}
-              disabled={simpleLoading || !simpleTopic.trim()}
-            >
-              {simpleLoading ? 'Generating...' : 'Generate & Render'}
-            </button>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={handleSimpleGenerate}
+                disabled={simpleLoading || !simpleTopic.trim()}
+              >
+                {simpleLoading ? 'Generating...' : 'Generate & Render'}
+              </button>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={handleSimpleReset}
+                disabled={simpleLoading}
+              >
+                Reset
+              </button>
+            </div>
           </section>
 
           {/* Basic Settings */}
