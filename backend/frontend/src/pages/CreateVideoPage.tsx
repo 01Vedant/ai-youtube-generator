@@ -132,6 +132,12 @@ export const CreateVideoPage: React.FC = () => {
       toast.error('Please enter a topic');
       return;
     }
+    if (simpleDuration < 15 || simpleDuration > 300) {
+      const msg = 'Duration must be between 15 and 300 seconds';
+      setSimpleError(msg);
+      toast.error(msg);
+      return;
+    }
 
     setSimpleLoading(true);
     setSimpleError(null);
@@ -501,8 +507,8 @@ export const CreateVideoPage: React.FC = () => {
                 <input
                   id="simple-duration"
                   type="number"
-                  min={10}
-                  max={600}
+                  min={15}
+                  max={300}
                   value={simpleDuration}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSimpleDuration(parseInt(e.target.value, 10) || 60)}
                 />
@@ -516,9 +522,10 @@ export const CreateVideoPage: React.FC = () => {
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
               <button
                 type="button"
+                data-testid="simple-generate-render"
                 className="btn-primary"
                 onClick={handleSimpleGenerate}
-                disabled={simpleLoading || !simpleTopic.trim()}
+                disabled={simpleLoading || !simpleTopic.trim() || simpleDuration < 15 || simpleDuration > 300}
               >
                 {simpleLoading ? 'Generating...' : 'Generate & Render'}
               </button>
