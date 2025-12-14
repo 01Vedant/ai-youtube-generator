@@ -175,7 +175,7 @@ export async function startSimpleRender(input: {
   });
 }
 
-export async function getPresets(): Promise<{ presets: Array<{ id: string; name: string; description?: string; default_voice?: 'F' | 'M' }> }> {
+export async function getPresets(): Promise<{ presets: any[] }> {
   return fetchJson('/presets');
 }
 // Admin API
