@@ -512,6 +512,7 @@ export const CreateVideoPage: React.FC = () => {
                 <label htmlFor="simple-topic">Topic</label>
                 <input
                   id="simple-topic"
+                  data-testid="simple-topic"
                   type="text"
                   value={simpleTopic}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSimpleTopic(e.target.value)}
@@ -546,6 +547,7 @@ export const CreateVideoPage: React.FC = () => {
                 <label htmlFor="simple-voice">Voice</label>
                 <select
                   id="simple-voice"
+                  data-testid="simple-voice"
                   value={simpleVoice}
                   onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSimpleVoice(e.target.value as 'F' | 'M')}
                   aria-label="Select voice for simple mode"
@@ -574,6 +576,7 @@ export const CreateVideoPage: React.FC = () => {
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
               <button
                 type="button"
+                data-testid="simple-generate-render"
                 className="btn-primary"
                 onClick={handleSimpleGenerate}
                 disabled={simpleLoading || !simpleTopic.trim()}
