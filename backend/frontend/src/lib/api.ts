@@ -145,6 +145,19 @@ export async function submitRender(payload: unknown): Promise<{ job_id: string }
     body: JSON.stringify(payload),
   });
 }
+
+export async function generateStoryboard(input: {
+  topic: string;
+  duration_sec?: number;
+  voice?: 'F' | 'M';
+  style?: string;
+  language?: string;
+}): Promise<any> {
+  return fetchJson('/storyboard/generate', {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+}
 // Admin API
 
 export async function getAdminUsers(params: { page?: number; pageSize?: number; q?: string; sort?: string } = {}): Promise<AdminUsersRes> {
