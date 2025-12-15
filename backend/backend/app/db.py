@@ -39,19 +39,14 @@ def init_db() -> None:
             """
             CREATE TABLE IF NOT EXISTS shares (
                 share_id TEXT PRIMARY KEY,
-                job_id TEXT,
-                user_id TEXT,
-                artifact_url TEXT,
-                title TEXT,
-                description TEXT,
-                created_at TEXT,
-                revoked INTEGER NOT NULL DEFAULT 0
+                job_id TEXT NOT NULL,
+                created_at TEXT NOT NULL
             )
+
             """
         )
         try:
             conn.execute("CREATE INDEX IF NOT EXISTS idx_shares_job_id ON shares(job_id)")
-            conn.execute("CREATE INDEX IF NOT EXISTS idx_shares_user_id ON shares(user_id)")
         except sqlite3.OperationalError:
             pass
         # Feedback table migration
@@ -575,6 +570,41 @@ def get_job_row(job_id: str) -> dict | None:
             (job_id,),
         ).fetchone()
         return dict(row) if row else None
+    finally:
+        conn.close()
+
+
+def _shares_pk_col(conn: sqlite3.Connection) -> str:
+    cols = [row[1] for row in conn.execute("PRAGMA table_info(shares)").fetchall()]
+    return "share_id" if "share_id" in cols else "id"
+
+
+
+def create_share(job_id: str) -> str:
+    share_id = uuid_hex()
+    conn = get_conn()
+    try:
+        pk = _shares_pk_col(conn)
+        conn.execute(
+            f"INSERT INTO shares ({pk}, job_id, created_at) VALUES (?,?,?)",
+            (share_id, job_id, _utcnow_iso()),
+        )
+        conn.commit()
+        return share_id
+    finally:
+        conn.close()
+
+
+def get_share(share_id: str) -> dict | None:
+    conn = get_conn()
+    try:
+        pk = _shares_pk_col(conn)
+        row = conn.execute(
+            f"SELECT {pk} as share_id, job_id, created_at FROM shares WHERE {pk} = ?",
+            (share_id,),
+        ).fetchone()
+        return dict(row) if row else None
+
     finally:
         conn.close()
 
