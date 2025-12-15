@@ -43,3 +43,14 @@ backend/backend/data/*.db
 __pycache__/
 **/__pycache__/
 *.py[cod]
+
+# Python caches / bytecode
+__pycache__/
+**/__pycache__/
+*.py[cod]
+
+# Virtual environments (never commit)
+.venv/
+**/.venv/
+venv/
+**/venv/
