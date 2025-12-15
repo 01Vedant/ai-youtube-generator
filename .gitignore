@@ -39,3 +39,7 @@ backend/backend/data/*.db-*
 backend/backend/data/app.db
 backend/backend/data/*.db
 
+# Python bytecode / caches
+__pycache__/
+**/__pycache__/
+*.py[cod]
